@@ -42,11 +42,11 @@ public class Waste {
         this.id = id;
     }
 
-    public User getUserId() {
+    public User getUser() {
         return userId;
     }
 
-    public void setUserId(User userId) {
+    public void setUser(User userId) {
         this.userId = userId;
     }
 
