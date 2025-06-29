@@ -8,5 +8,5 @@ import java.util.Optional;
 @Repository
 public interface GameRepository {
     @Query("SELECT g FROM Game g WHERE g.typesOfGames = ?1")
-    Optional<Game> findByName(String ecoTrivia);
+    Optional<Game> findByName(GameEnum typesOfGames);
 }

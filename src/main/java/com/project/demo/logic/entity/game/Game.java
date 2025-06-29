@@ -13,6 +13,7 @@ public class Game {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private GameEnum typesOfGames;
+    private String description;
 
     public Game() {}
 
@@ -33,11 +34,14 @@ public class Game {
     public void setTypesOfGames(GameEnum typesOfGames) {
         this.typesOfGames = typesOfGames;
     }
+    public String getDescription() {return description;}
+    public void setDescription(String description) {this.description = description;}
     @Override
     public String toString() {
         return "Game{" +
                 "id=" + id +
                 ", typesOfGames=" + typesOfGames +
+                ", description='" + description + '\'' +
                 '}';
     }
 
