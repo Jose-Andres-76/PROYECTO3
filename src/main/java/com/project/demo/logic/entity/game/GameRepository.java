@@ -1,6 +1,12 @@
 package com.project.demo.logic.entity.game;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
-public interface GameRepository extends JpaRepository<Game, Long> {
+import java.util.Optional;
+
+@Repository
+public interface GameRepository {
+    @Query("SELECT g FROM Game g WHERE g.typesOfGames = ?1")
+    Optional<Game> findByName(String ecoTrivia);
 }
