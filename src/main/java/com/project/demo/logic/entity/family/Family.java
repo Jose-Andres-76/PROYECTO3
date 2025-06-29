@@ -35,19 +35,19 @@ public class Family {
         this.id = id;
     }
 
-    public User getIdSon() {
+    public User getSon() {
         return idSon;
     }
 
-    public void setIdSon(User idSon) {
+    public void setSon(User idSon) {
         this.idSon = idSon;
     }
 
-    public User getIdFather() {
+    public User getFather() {
         return idFather;
     }
 
-    public void setIdFather(User idFather) {
+    public void setFather(User idFather) {
         this.idFather = idFather;
     }
 
