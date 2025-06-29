@@ -1,5 +1,8 @@
-package com.project.demo.logic.entity.rol;
+package com.project.demo.logic.entity.user;
 
+import com.project.demo.logic.entity.rol.Role;
+import com.project.demo.logic.entity.rol.RoleEnum;
+import com.project.demo.logic.entity.rol.RoleRepository;
 import com.project.demo.logic.entity.user.User;
 import com.project.demo.logic.entity.user.UserRepository;
 import org.springframework.context.ApplicationListener;
@@ -10,14 +13,15 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class AdminSeeder implements ApplicationListener<ContextRefreshedEvent> {
+public class UserSeeder implements ApplicationListener<ContextRefreshedEvent> {
+
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
 
 
-    public AdminSeeder(
+    public UserSeeder (
             RoleRepository roleRepository,
             UserRepository  userRepository,
             PasswordEncoder passwordEncoder
@@ -29,30 +33,32 @@ public class AdminSeeder implements ApplicationListener<ContextRefreshedEvent> {
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        this.createAdministrator();
+        this.createUser();
     }
 
-    private void createAdministrator() {
-        User Admin = new User();
-        Admin.setName("Admin");
-        Admin.setLastname("Admin");
-        Admin.setEmail("admin@gmail.com");
-        Admin.setPassword("admin123");
+    private void createUser() {
+        User Father = new User();
+        Father.setName("Father");
+        Father.setLastname("Figure");
+        Father.setEmail("father@gmail.com");
+        Father.setPassword("father123");
 
-        Optional<Role> optionalRole = roleRepository.findByName(RoleEnum.ADMIN);
-        Optional<User> optionalUser = userRepository.findByEmail(Admin.getEmail());
+        Optional<Role> optionalRole = roleRepository.findByName(RoleEnum.FATHER);
+        Optional<User> optionalUser = userRepository.findByEmail(Father.getEmail());
 
         if (optionalRole.isEmpty() || optionalUser.isPresent()) {
             return;
         }
 
         var user = new User();
-        user.setName(Admin.getName());
-        user.setLastname(Admin.getLastname());
-        user.setEmail(Admin.getEmail());
-        user.setPassword(passwordEncoder.encode(Admin.getPassword()));
+        user.setName(Father.getName());
+        user.setLastname(Father.getLastname());
+        user.setEmail(Father.getEmail());
+        user.setPassword(passwordEncoder.encode(Father.getPassword()));
         user.setRole(optionalRole.get());
 
         userRepository.save(user);
+
+        
     }
 }
