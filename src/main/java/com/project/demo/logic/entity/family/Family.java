@@ -11,7 +11,7 @@ public class Family {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "id_son_", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "id_son_", referencedColumnName = "id", nullable = true)
     private User idSon;
 
     @ManyToOne
