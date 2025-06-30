@@ -29,28 +29,28 @@ public class AdminSeeder implements ApplicationListener<ContextRefreshedEvent> {
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        this.createSuperAdministrator();
+        this.createAdministrator();
     }
 
-    private void createSuperAdministrator() {
-        User superAdmin = new User();
-        superAdmin.setName("Super");
-        superAdmin.setLastname("Admin");
-        superAdmin.setEmail("super.admin@gmail.com");
-        superAdmin.setPassword("superadmin123");
+    private void createAdministrator() {
+        User Admin = new User();
+        Admin.setName("Admin");
+        Admin.setLastname("Admin");
+        Admin.setEmail("admin@gmail.com");
+        Admin.setPassword("admin123");
 
-        Optional<Role> optionalRole = roleRepository.findByName(RoleEnum.SUPER_ADMIN);
-        Optional<User> optionalUser = userRepository.findByEmail(superAdmin.getEmail());
+        Optional<Role> optionalRole = roleRepository.findByName(RoleEnum.ADMIN);
+        Optional<User> optionalUser = userRepository.findByEmail(Admin.getEmail());
 
         if (optionalRole.isEmpty() || optionalUser.isPresent()) {
             return;
         }
 
         var user = new User();
-        user.setName(superAdmin.getName());
-        user.setLastname(superAdmin.getLastname());
-        user.setEmail(superAdmin.getEmail());
-        user.setPassword(passwordEncoder.encode(superAdmin.getPassword()));
+        user.setName(Admin.getName());
+        user.setLastname(Admin.getLastname());
+        user.setEmail(Admin.getEmail());
+        user.setPassword(passwordEncoder.encode(Admin.getPassword()));
         user.setRole(optionalRole.get());
 
         userRepository.save(user);

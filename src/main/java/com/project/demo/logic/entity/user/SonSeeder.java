@@ -13,7 +13,8 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class UserSeeder implements ApplicationListener<ContextRefreshedEvent> {
+
+public class SonSeeder implements ApplicationListener<ContextRefreshedEvent> {
 
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
@@ -21,7 +22,7 @@ public class UserSeeder implements ApplicationListener<ContextRefreshedEvent> {
     private final PasswordEncoder passwordEncoder;
 
 
-    public UserSeeder (
+    public SonSeeder (
             RoleRepository roleRepository,
             UserRepository  userRepository,
             PasswordEncoder passwordEncoder
@@ -33,32 +34,31 @@ public class UserSeeder implements ApplicationListener<ContextRefreshedEvent> {
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        this.createUser();
+        this.createSon();
     }
 
-    private void createUser() {
-        User Father = new User();
-        Father.setName("Father");
-        Father.setLastname("Figure");
-        Father.setEmail("father@gmail.com");
-        Father.setPassword("father123");
+    private void createSon() {
 
-        Optional<Role> optionalRole = roleRepository.findByName(RoleEnum.FATHER);
-        Optional<User> optionalUser = userRepository.findByEmail(Father.getEmail());
+        User Son = new User();
+        Son.setName("Son");
+        Son.setLastname("Figure");
+        Son.setEmail("son@gmail.com");
+        Son.setPassword("son123");
+
+        Optional<Role> optionalRole = roleRepository.findByName(RoleEnum.SON);
+        Optional<User> optionalUser = userRepository.findByEmail(Son.getEmail());
 
         if (optionalRole.isEmpty() || optionalUser.isPresent()) {
             return;
         }
 
         var user = new User();
-        user.setName(Father.getName());
-        user.setLastname(Father.getLastname());
-        user.setEmail(Father.getEmail());
-        user.setPassword(passwordEncoder.encode(Father.getPassword()));
+        user.setName(Son.getName());
+        user.setLastname(Son.getLastname());
+        user.setEmail(Son.getEmail());
+        user.setPassword(passwordEncoder.encode(Son.getPassword()));
         user.setRole(optionalRole.get());
 
         userRepository.save(user);
-
-
     }
 }
