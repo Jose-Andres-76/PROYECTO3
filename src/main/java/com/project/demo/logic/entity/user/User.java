@@ -34,6 +34,10 @@ public class User implements UserDetails {
     @Column(name = "updated_at")
     private Date updatedAt;
 
+    private String urlImage;
+
+    private int points;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role.getName().toString());
@@ -149,5 +153,33 @@ public class User implements UserDetails {
         this.role = role;
 
         return this;
+    }
+
+    public String getUrlImage() {
+        return urlImage;
+    }
+    public void setUrlImage(String urlImage) {
+        this.urlImage = urlImage;
+    }
+    public int getPoints() {
+        return points;
+    }
+    public void setPoints(int points) {
+        this.points = points;
+    }
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", urlImage='" + urlImage + '\'' +
+                ", points=" + points +
+                ", role=" + role +
+                '}';
     }
 }
