@@ -11,6 +11,10 @@ import java.util.Map;
 @Configuration
 public class CloudinaryConfig {
 
+    /**
+     * This configuration calls from the appliccation.properties the exact values for the images
+     */
+
     @Value("${cloudinary.cloud-name}")
     private String cloudName;
 
