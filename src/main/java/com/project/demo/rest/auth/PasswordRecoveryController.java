@@ -24,7 +24,7 @@ public class PasswordRecoveryController {
     public ResponseEntity<?> sendCode(@RequestBody Map<String, String> body) {
         String email = body.get("email");
         recoveryService.sendRecoveryCode(email);
-        return ResponseEntity.ok("Código enviado");
+        return ResponseEntity.ok("Code send successfully");
     }
 
     @PostMapping("/validate-code")
@@ -32,7 +32,7 @@ public class PasswordRecoveryController {
         String email = body.get("email");
         String code = body.get("code");
         boolean valid = recoveryService.validateCode(email, code);
-        return valid ? ResponseEntity.ok("Código válido") : ResponseEntity.badRequest().body("Código inválido");
+        return valid ? ResponseEntity.ok("Validate Code") : ResponseEntity.badRequest().body("Invalid Code");
     }
 
     @PostMapping("/reset-password")
@@ -41,14 +41,14 @@ public class PasswordRecoveryController {
         String code = body.get("code");
         String newPassword = body.get("newPassword");
         if (!recoveryService.validateCode(email, code)) {
-            return ResponseEntity.badRequest().body("Código inválido o expirado");
+            return ResponseEntity.badRequest().body("Invalid Code or Expira");
         }
         var userOpt = userRepository.findByEmail(email);
-        if (userOpt.isEmpty()) return ResponseEntity.badRequest().body("Usuario no encontrado");
+        if (userOpt.isEmpty()) return ResponseEntity.badRequest().body("User not found");
         var user = userOpt.get();
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
         recoveryService.deleteToken(email);
-        return ResponseEntity.ok("Contraseña actualizada");
+        return ResponseEntity.ok("Password Change");
     }
 }

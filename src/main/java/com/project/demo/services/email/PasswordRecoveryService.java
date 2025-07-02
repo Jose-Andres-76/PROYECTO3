@@ -34,8 +34,8 @@ public class PasswordRecoveryService {
 
         emailService.sendSimpleEmail(new EmailModel(
                 email,
-                "Código de recuperación",
-                "Tu código de recuperación es: " + code
+                "Code recover",
+                "Your recovery code is the following: " + code
         ));
     }
 
