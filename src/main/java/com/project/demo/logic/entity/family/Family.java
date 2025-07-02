@@ -8,10 +8,11 @@ import jakarta.persistence.*;
 public class Family {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "id_son_", referencedColumnName = "id", nullable = true)
+    @JoinColumn(name = "id_son_", referencedColumnName = "id", nullable = false)
     private User idSon;
 
     @ManyToOne

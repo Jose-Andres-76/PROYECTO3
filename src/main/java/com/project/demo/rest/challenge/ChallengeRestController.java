@@ -23,7 +23,7 @@ public class ChallengeRestController {
     private ChallengeRepository challengeRepository;
 
     @GetMapping
-    @PreAuthorize("IsAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getAllChallenges(
         @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "10") int size,
@@ -55,12 +55,45 @@ public class ChallengeRestController {
     @PostMapping
     @PreAuthorize("isAuthenticated() && hasAnyRole('ADMIN', 'FATHER')")
     public ResponseEntity<?> createChallenge(@RequestBody Challenge newChallenge, HttpServletRequest request) {
-        Optional<Challenge> foundChallengeOpt = challengeRepository.findById(newChallenge.getId());
-        if (foundChallengeOpt.isPresent()) {
-            return new GlobalResponseHandler().handleResponse("Challenge with name: " + newChallenge.getName() + " already exists.", HttpStatus.CONFLICT, request);
+        Challenge savedChallenge = challengeRepository.save(newChallenge);
+        return new GlobalResponseHandler().handleResponse("Challenge created successfully.", savedChallenge, HttpStatus.CREATED, request);
+
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("isAuthenticated() && hasAnyRole('ADMIN', 'FATHER')")
+    public ResponseEntity<?> updateChallenge(@PathVariable Long id, @RequestBody Challenge challenge, HttpServletRequest request) {
+        Optional<Challenge> existingChallengeOpt = challengeRepository.findById(id);
+        if (existingChallengeOpt.isPresent()) {
+            Challenge existingChallenge = existingChallengeOpt.get();
+            if (challenge.getGame() != null) {
+                existingChallenge.setGame(challenge.getGame());
+            }
+            if (challenge.getPoints() != 0) {
+                existingChallenge.setPoints(challenge.getPoints());
+            }
+            if (challenge.isChallengeStatus() != existingChallenge.isChallengeStatus()) {
+                existingChallenge.setChallengeStatus(challenge.isChallengeStatus());
+            }
+            if (challenge.getDescription() != null) {
+                existingChallenge.setDescription(challenge.getDescription());
+            }
+            Challenge updatedChallenge = challengeRepository.save(existingChallenge);
+            return new GlobalResponseHandler().handleResponse("Challenge updated successfully.", updatedChallenge, HttpStatus.OK, request);
         } else {
-            Challenge savedChallenge = challengeRepository.save(newChallenge);
-            return new GlobalResponseHandler().handleResponse("Challenge created successfully.", savedChallenge, HttpStatus.CREATED, request);
+            return new GlobalResponseHandler().handleResponse("Challenge with id: " + id + " not found.", HttpStatus.NOT_FOUND, request);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated() && hasAnyRole('ADMIN', 'FATHER')")
+    public ResponseEntity<?> deleteChallenge(@PathVariable Long id, HttpServletRequest request) {
+        Optional<Challenge> challenge = challengeRepository.findById(id);
+        if (challenge.isPresent()) {
+            challengeRepository.deleteById(id);
+            return new GlobalResponseHandler().handleResponse("Challenge deleted successfully.", challenge.get(), HttpStatus.OK, request);
+        } else {
+            return new GlobalResponseHandler().handleResponse("Challenge with id: " + id + " not found.", HttpStatus.NOT_FOUND, request);
         }
     }
 

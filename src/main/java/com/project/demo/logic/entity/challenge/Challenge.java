@@ -11,14 +11,14 @@ public class Challenge {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private long id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "family_id", referencedColumnName = "id", nullable = false)
     private Family familyId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "game_id", referencedColumnName = "id", nullable = true)
+    @JoinColumn(name = "game_id", referencedColumnName = "id", nullable = false)
     private Game gameId;
 
     @Column(nullable = false)
@@ -53,7 +53,7 @@ public class Challenge {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
