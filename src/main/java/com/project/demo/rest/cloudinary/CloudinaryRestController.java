@@ -5,6 +5,7 @@ import com.project.demo.logic.entity.http.Meta;
 import com.project.demo.logic.entity.user.User;
 import com.project.demo.services.cloudinary.CloudinaryService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +22,8 @@ import java.util.Map;
 @RequestMapping("/cloudinary")
 public class CloudinaryRestController {
 
-    private final CloudinaryService cloudinaryService;
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     public CloudinaryRestController(CloudinaryService cloudinaryService) {
         this.cloudinaryService = cloudinaryService;
@@ -43,51 +45,59 @@ public class CloudinaryRestController {
      *
      */
 
-    @PostMapping("/upload")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map> uploadImage(@RequestParam("file") MultipartFile file) {
-        return ResponseEntity.ok(cloudinaryService.upload(file));
+//    @PostMapping("/upload")
+//    @PreAuthorize("isAuthenticated()")
+//    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) {
+//        return ResponseEntity.ok(cloudinaryService.upload(file));
+//    }
+
+    @PostMapping("/user/{id}")
+    public ResponseEntity<?> upload(
+            @PathVariable Long id,
+            @RequestParam("image") MultipartFile file
+    ) {
+        return ResponseEntity.ok(cloudinaryService.upload(id, file) );
     }
 
-
-    /**
-     *
-     * @param publicId
-     * @param file
-     * This two what they do is Basically call the exact image from the public id from cloudinary
-     */
-    @PutMapping("/update/{publicId}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map> updateImage(
-            @PathVariable String publicId,
-            @RequestParam("file") MultipartFile file) {
-        return ResponseEntity.ok(cloudinaryService.updateImage(file, publicId));
-    }
-
-
-    /**
-     *
-     * @param publicId
-     * This one allocated the exact image that we can to change in cloudinary
-     */
-
-    @GetMapping("/image/{publicId}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> getImage(@PathVariable String publicId) {
-        return ResponseEntity.ok(cloudinaryService.getImageUrl(publicId));
-    }
-
-    /**
-     *
-     * @param publicId
-     * This method deletes the image from the server
-     */
-    @DeleteMapping("/image/{publicId}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map> deleteImage(@PathVariable String publicId) {
-        return ResponseEntity.ok(cloudinaryService.delete(publicId));
-    }
-
+//
+//    /**
+//     *
+//     * @param publicId
+//     * @param file
+//     * This two what they do is Basically call the exact image from the public id from cloudinary
+//     */
+//    @PutMapping("/update/{publicId}")
+//    @PreAuthorize("isAuthenticated()")
+//    public ResponseEntity<Map> updateImage(
+//            @PathVariable String publicId,
+//            @RequestParam("file") MultipartFile file) {
+//        return ResponseEntity.ok(cloudinaryService.updateImage(file, publicId));
+//    }
+//
+//
+//    /**
+//     *
+//     * @param publicId
+//     * This one allocated the exact image that we can to change in cloudinary
+//     */
+//
+//    @GetMapping("/image/{publicId}")
+//    @PreAuthorize("isAuthenticated()")
+//    public ResponseEntity<String> getImage(@PathVariable String publicId) {
+//        return ResponseEntity.ok(cloudinaryService.getImageUrl(publicId));
+//    }
+//
+//    /**
+//     *
+//     * @param publicId
+//     * This method deletes the image from the server
+//     */
+//    @DeleteMapping("/image/{publicId}")
+//    @PreAuthorize("isAuthenticated()")
+//    public ResponseEntity<Map> deleteImage(@PathVariable String publicId) {
+//        return ResponseEntity.ok(cloudinaryService.delete(publicId));
+//    }
+//
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public User authenticatedUser() {
