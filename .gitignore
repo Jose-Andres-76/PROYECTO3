@@ -30,6 +30,7 @@ build/tmp/
 build/classes/
 build/generated/
 build/resources/
+build/reports/
 /.gradle/buildOutputCleanup
 .gradle/8.7/checksums/checksums.lock
 .gradle/8.7/dependencies-accessors/gc.properties
