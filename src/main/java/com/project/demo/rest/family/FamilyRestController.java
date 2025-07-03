@@ -5,6 +5,8 @@ import com.project.demo.logic.entity.family.Family;
 import com.project.demo.logic.entity.family.FamilyRepository;
 import com.project.demo.logic.entity.http.GlobalResponseHandler;
 import com.project.demo.logic.entity.http.Meta;
+import com.project.demo.logic.entity.user.User;
+import com.project.demo.logic.entity.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +24,8 @@ import java.util.Optional;
 public class FamilyRestController {
     @Autowired
     private FamilyRepository familyRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
@@ -54,8 +58,27 @@ public class FamilyRestController {
     }
 
     @PostMapping
-    @PreAuthorize("isAuthenticated() && hasAnyRole('ADMIN', 'FATHER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FATHER')")
     public ResponseEntity<?> createFamily(@RequestBody Family newFamily, HttpServletRequest request) {
+        System.out.println("LLEGUEEE");
+        System.out.println(newFamily);
+
+
+        System.out.println(newFamily.getFather().getId());
+        Optional<User> father = userRepository.findByIdDefinitivo(newFamily.getFather().getId());
+        User fatherFound= father.get();
+        System.out.println(
+                fatherFound
+        );
+
+        Optional<User> son = userRepository.findByIdDefinitivo(newFamily.getSon().getId());
+        User sonFound= new User();
+        sonFound=son.get();
+
+        newFamily.setFather(fatherFound);
+        newFamily.setSon(sonFound);
+
+        System.out.println(newFamily);
         Family savedFamily = familyRepository.save(newFamily);
         return new GlobalResponseHandler().handleResponse("Family created successfully.", savedFamily, HttpStatus.CREATED, request);
     }
