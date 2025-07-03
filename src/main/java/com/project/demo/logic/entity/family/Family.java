@@ -11,12 +11,12 @@ public class Family {
     @Column(nullable = false)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "id_son_", referencedColumnName = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_son_", referencedColumnName = "id")
     private User idSon;
 
-    @ManyToOne
-    @JoinColumn(name = "id_father_", referencedColumnName = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_father_", referencedColumnName = "id")
     private User idFather;
 
     public Family() {
