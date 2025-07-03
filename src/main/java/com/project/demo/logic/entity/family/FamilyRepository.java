@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface FamilyRepository extends JpaRepository<Family, Long>{
+    Optional<Family> findById(long id);
 
     @Query ("SELECT f FROM Family f WHERE f.idFather = ?1")
     Optional<Family> findByFatherId(User father);

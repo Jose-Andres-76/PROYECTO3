@@ -4,7 +4,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface RewardRepository extends JpaRepository<Reward, Long> {
+    @Query("SELECT r FROM Reward r WHERE r.familyId.id = ?1")
+    Optional<Reward> findByFamilyId(Long familyId);
+
+    @Query("SELECT r FROM Reward r WHERE r.id = ?1")
+    Optional<Reward> findById(Long id);
 
 }
