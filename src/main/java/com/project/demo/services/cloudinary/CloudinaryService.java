@@ -29,7 +29,6 @@ public class CloudinaryService {
 
     public CloudinaryService(Cloudinary cloudinary) {
         this.cloudinary = cloudinary;
-        this.userRepository = userRepository;
     }
 
 
@@ -60,9 +59,14 @@ public class CloudinaryService {
             Map<String, Object> resultUpload = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder", "ProfilePictures"));
 
             String imageUrl = resultUpload.get("secure_url").toString();
+            String publicId = (String) resultUpload.get("public_id");
+
+            System.out.println(publicId);
 
             user.setUrlImage(imageUrl);
+            user.setPublicIdCloudinary(publicId);
 
+            System.out.println(user);
             userRepository.save(user);
 
             return user;
@@ -73,60 +77,51 @@ public class CloudinaryService {
 
 
     }
-//    /**
-//     *
-//     * @param file
-//     * This one retunr the file
-//     * @return
-//     */
-//    @SuppressWarnings("unchecked")
-//    public Map upload(MultipartFile file) {
-//        try {
-//            return Map<String, ObjectUtils> resultload = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("Folders", "ProfilePictures"));
-//        } catch (IOException e) {
-//            throw new RuntimeException("Upload failed", e);
-//        }
-//    }
-//
-//    /**
-//     *
-//     * @param file
-//     * @param publicId
-//     * This two update a specific image
-//     * @return
-//     */
-//    public Map updateImage(MultipartFile file, String publicId) {
-//        try {
-//            return cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
-//                    "public_id", publicId,
-//                    "overwrite", true
-//            ));
-//        } catch (IOException e) {
-//            throw new RuntimeException("Update (overwrite) failed", e);
-//        }
-//    }
-//
-//
-//    /**
-//     *
-//     * @param publicId
-//     * Get the image from the server
-//     */
-//    public String getImageUrl(String publicId) {
-//        return cloudinary.url().secure(true).generate(publicId);
-//    }
-//
-//    /**
-//     *
-//     * @param publicId
-//     * Delete the image from the server
-//     * @return
-//     */
-//    public Map delete(String publicId) {
-//        try {
-//            return cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-//        } catch (IOException e) {
-//            throw new RuntimeException("Delete failed", e);
-//        }
-//    }
+
+
+    public User overwrite(Long id, MultipartFile file) {
+
+        List<String> allowedExtensions = Arrays.asList("jpg", "jpeg", "png", "webp", "avif");
+        Optional<User> userFound= userRepository.findById(id);
+        User user = userFound.get();
+
+        String extensions = null;
+
+        if( file.getOriginalFilename() != null ) {
+            String[] splitName = file.getOriginalFilename().split("\\.");
+            extensions = splitName[splitName.length - 1];
+        }
+
+
+        if (!allowedExtensions.contains(extensions)) {
+            System.out.println("Extensions not allowed");
+            return null;
+        }
+
+            String publicId = user.getPublicIdCloudinary();
+
+
+
+            try {
+                Map<String, Object> resultUpload = cloudinary.uploader().upload(
+                        file.getBytes(),
+                        ObjectUtils.asMap(
+                                "public_id", publicId,   // should include "ProfilePictures/xyz"
+                                "overwrite", true,
+                                "invalidate", true
+                        )
+                );
+
+                String imageUrl = resultUpload.get("secure_url").toString();
+                user.setUrlImage(imageUrl);
+                userRepository.save(user);
+
+                return user;
+
+            } catch (IOException e) {
+                throw new RuntimeException("Cloudinary overwrite failed", e);
+            }
+
+    }
+
 }

@@ -29,6 +29,14 @@ public class CloudinaryRestController {
         this.cloudinaryService = cloudinaryService;
     }
 
+
+    /**
+     *
+     * @param request, just the  http response
+     *                 this option is just to verify that the cloudinary option is up and running
+     * @return
+     * Response
+     */
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getAll(
@@ -38,19 +46,14 @@ public class CloudinaryRestController {
                  HttpStatus.OK, request);
     }
 
+
     /**
      *
-     * @param file
-     *  This param what it does is to upload de the image that you implement
+     * @param id, id of the user
+     * @param file, image send to be uploaded
+     * @return response
      *
      */
-
-//    @PostMapping("/upload")
-//    @PreAuthorize("isAuthenticated()")
-//    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) {
-//        return ResponseEntity.ok(cloudinaryService.upload(file));
-//    }
-
     @PostMapping("/user/{id}")
     public ResponseEntity<?> upload(
             @PathVariable Long id,
@@ -66,13 +69,13 @@ public class CloudinaryRestController {
 //     * @param file
 //     * This two what they do is Basically call the exact image from the public id from cloudinary
 //     */
-//    @PutMapping("/update/{publicId}")
-//    @PreAuthorize("isAuthenticated()")
-//    public ResponseEntity<Map> updateImage(
-//            @PathVariable String publicId,
-//            @RequestParam("file") MultipartFile file) {
-//        return ResponseEntity.ok(cloudinaryService.updateImage(file, publicId));
-//    }
+    @PutMapping("/user/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> updateImage(
+            @PathVariable Long id,
+            @RequestParam("image") MultipartFile file) {
+        return ResponseEntity.ok(cloudinaryService.overwrite(id,file));
+    }
 //
 //
 //    /**
