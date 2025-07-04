@@ -1,11 +1,10 @@
 package com.project.demo.services.email;
 
+import com.project.demo.logic.entity.email.EmailModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-
-import static java.awt.SystemColor.text;
 
 @Service
 

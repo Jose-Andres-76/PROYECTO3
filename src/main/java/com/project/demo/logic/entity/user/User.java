@@ -35,7 +35,7 @@ public class User implements UserDetails {
     private Date updatedAt;
 
     private String urlImage;
-
+    private String publicIdCloudinary;
     private int points;
 
     @Override
@@ -167,6 +167,15 @@ public class User implements UserDetails {
     public void setPoints(int points) {
         this.points = points;
     }
+
+    public String getPublicIdCloudinary() {
+        return publicIdCloudinary;
+    }
+
+    public void setPublicIdCloudinary(String publicIdCloudinary) {
+        this.publicIdCloudinary = publicIdCloudinary;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -178,8 +187,10 @@ public class User implements UserDetails {
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", urlImage='" + urlImage + '\'' +
+                ", publicIdCloudinary='" + publicIdCloudinary + '\'' +
                 ", points=" + points +
                 ", role=" + role +
+                ", orders=" + orders +
                 '}';
     }
 }

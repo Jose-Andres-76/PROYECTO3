@@ -1,5 +1,6 @@
 package com.project.demo.services.email;
 
+import com.project.demo.logic.entity.email.EmailModel;
 import com.project.demo.logic.entity.email.PasswordResetToken;
 import com.project.demo.logic.entity.email.PasswordResetTokenRepository;
 import com.project.demo.logic.entity.user.UserRepository;

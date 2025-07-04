@@ -2,15 +2,11 @@ package com.project.demo.rest.Email;
 
 
 import com.project.demo.logic.entity.http.GlobalResponseHandler;
-import com.project.demo.logic.entity.http.Meta;
 import com.project.demo.logic.entity.user.User;
-import com.project.demo.services.email.EmailModel;
+import com.project.demo.logic.entity.email.EmailModel;
 import com.project.demo.services.email.EmailService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

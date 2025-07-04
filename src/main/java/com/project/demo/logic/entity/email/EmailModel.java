@@ -1,4 +1,4 @@
-package com.project.demo.services.email;
+package com.project.demo.logic.entity.email;
 
 public class EmailModel {
 
