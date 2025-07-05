@@ -12,43 +12,100 @@ import java.util.Map;
 public class GeminiController {
 
     private final GeminiConsole geminiConsole;
-    private final Map<String, StringBuilder> conversaciones = new HashMap<>();
+    private final Map<String, StringBuilder> conversations = new HashMap<>();
 
     public GeminiController(GeminiConsole geminiConsole) {
         this.geminiConsole = geminiConsole;
     }
 
-    @PostMapping("/conversar")
-    public String conversar(@RequestParam String producto, @RequestParam String mensaje) {
-        StringBuilder contexto = conversaciones.computeIfAbsent(producto, k -> new StringBuilder());
-
-        Map<String, String> descripciones = Map.of(
-                "paper", "El papel es reciclable y debe ir en el contenedor azul.",
-                "plastic", "El plástico es reciclable, pero algunos tipos requieren separación.",
-                "glass", "El vidrio es reciclable, pero debe estar limpio y sin tapas.",
-                "metal", "El metal es reciclable y se puede depositar en puntos específicos.",
-                "cardboard", "El cartón es reciclable y debe ir en el contenedor azul.",
-                "trash", "Este material no es reciclable y debe ir a la basura común."
-        );
-
-        if (contexto.length() == 0 && descripciones.containsKey(producto)) {
-            contexto.append("Descripción del producto: ").append(descripciones.get(producto)).append("\n");
+    @PostMapping("/chat")
+    public String chat(@RequestParam String product, @RequestParam String message) {
+        if (product == null || product.trim().isEmpty()) {
+            String context = buildGeneralContext(message);
+            return generateResponse(context);
         }
 
-        contexto.append("Usuario: ").append(mensaje).append("\n");
+        StringBuilder context = conversations.computeIfAbsent(product, k -> new StringBuilder());
 
-        String respuesta;
+        if (context.length() == 0) {
+            context.append(buildProductContext(product));
+        }
+
+        context.append("Usuario: ").append(message).append("\n");
+
+        String response = generateResponse(context.toString());
+        context.append("Gemini: ").append(response).append("\n");
+
+        return response;
+    }
+
+    private String buildGeneralContext(String message) {
+        return "INSTRUCCIONES ESTRICTAS: Responde ÚNICAMENTE con 2 párrafos cortos. Máximo 3 oraciones por párrafo. " +
+                "Sé directo, práctico y conciso. No uses listas, numeraciones ni explicaciones largas.\n\n" +
+                "Eres un asistente de medio ambiente especializado en reciclaje. " +
+                "Tu respuesta debe ser útil pero breve.\n\n" +
+                "Pregunta del usuario: " + message + "\n\n" +
+                "Respuesta (máximo 2 párrafos cortos):";
+    }
+
+    private String buildProductContext(String product) {
+        Map<String, String> descriptions = Map.of(
+                "paper", "MATERIAL: Papel. Es reciclable y va en contenedor azul. Debe estar limpio y seco.",
+                "plastic", "MATERIAL: Plástico. Generalmente reciclable, revisa el número en el envase. Va en contenedor amarillo.",
+                "glass", "MATERIAL: Vidrio. Totalmente reciclable, debe estar limpio sin tapas. Va en contenedor verde.",
+                "metal", "MATERIAL: Metal/Lata. Altamente reciclable. Vacía y enjuaga antes de depositar.",
+                "cardboard", "MATERIAL: Cartón. Reciclable, debe estar seco y desdoblado. Va en contenedor azul.",
+                "trash", "MATERIAL: Residuo no reciclable. Debe ir a basura común."
+        );
+
+        String materialDesc = descriptions.getOrDefault(product.toLowerCase(),
+                "MATERIAL: " + product + ". Consulta las normas locales de reciclaje.");
+
+        return "INSTRUCCIONES ESTRICTAS: Responde ÚNICAMENTE con 2 párrafos cortos. Máximo 3 oraciones por párrafo. " +
+                "Sé directo, práctico y conciso. No uses listas, numeraciones ni explicaciones largas.\n\n" +
+                materialDesc + "\n\n" +
+                "Contexto de la conversación:\n";
+    }
+
+    private String generateResponse(String context) {
         try (Client client = Client.builder().apiKey(geminiConsole.getApiKey()).build()) {
             GenerateContentResponse response = client.models.generateContent(
                     "models/gemini-2.5-flash-preview-05-20",
-                    contexto.toString(),
+                    context + "\n\nRECUERDA: Solo 2 párrafos cortos, máximo 3 oraciones cada uno.",
                     null
             );
-            respuesta = response.text();
-            contexto.append("Gemini: ").append(respuesta).append("\n");
+
+            String result = response.text().trim();
+
+            return limitResponseLength(result);
+
         } catch (Exception e) {
-            respuesta = "Error al comunicarse con Gemini: " + e.getMessage();
+            return "Error al consultar el asistente IA. Por favor, intenta nuevamente.";
         }
-        return respuesta;
+    }
+
+    private String limitResponseLength(String response) {
+        if (response.length() > 400) {
+            String[] sentences = response.split("\\. ");
+            StringBuilder shortResponse = new StringBuilder();
+            int sentenceCount = 0;
+
+            for (String sentence : sentences) {
+                if (sentenceCount < 6 && shortResponse.length() < 350) {
+                    shortResponse.append(sentence);
+                    if (!sentence.endsWith(".")) {
+                        shortResponse.append(".");
+                    }
+                    shortResponse.append(" ");
+                    sentenceCount++;
+                } else {
+                    break;
+                }
+            }
+
+            return shortResponse.toString().trim();
+        }
+
+        return response;
     }
 }
