@@ -14,7 +14,7 @@ public class Reward {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "reward_id", nullable = false)
+    @JoinColumn(name = "family_id", nullable = false)
     private Family familyId;
 
     @Column(nullable = false)

@@ -5,6 +5,8 @@ import com.project.demo.logic.entity.http.GlobalResponseHandler;
 import com.project.demo.logic.entity.http.Meta;
 import com.project.demo.logic.entity.reward.Reward;
 import com.project.demo.logic.entity.reward.RewardRepository;
+import com.project.demo.logic.entity.user.User;
+import com.project.demo.logic.entity.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +24,8 @@ import java.util.Optional;
 public class RewardRestController {
     @Autowired
     private RewardRepository rewardRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
@@ -50,6 +54,18 @@ public class RewardRestController {
             return new GlobalResponseHandler().handleResponse("Reward found.", reward.get(), HttpStatus.OK, request);
         } else {
             return new GlobalResponseHandler().handleResponse("Reward with id: " + id + " not found.", HttpStatus.NOT_FOUND, request);
+        }
+    }
+
+    @GetMapping("/my-family-rewards/{userId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getFamilyRewardsByUserId(@PathVariable Long userId, HttpServletRequest request) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isPresent()) {
+            List<Reward> rewards = rewardRepository.findFamilyRewardsByUserId(userId);
+            return new GlobalResponseHandler().handleResponse("Rewards for family found.", rewards, HttpStatus.OK, request);
+        } else {
+            return new GlobalResponseHandler().handleResponse("User with id: " + userId + " not found.", HttpStatus.NOT_FOUND, request);
         }
     }
 
