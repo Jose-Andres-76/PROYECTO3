@@ -57,6 +57,23 @@ public class FamilyRestController {
         }
     }
 
+    //we add a method to get the multiple families of the authenticated user
+    @GetMapping("/my-family/{userId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getFamilyByUserId(@PathVariable Long userId, HttpServletRequest request) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isPresent()) {
+            List<Family> families = familyRepository.findByFatherId(user.get());
+            if (!families.isEmpty()) {
+                return new GlobalResponseHandler().handleResponse("Families found for user with id: " + userId, families, HttpStatus.OK, request);
+            } else {
+                return new GlobalResponseHandler().handleResponse("No families found for user with id: " + userId, HttpStatus.NOT_FOUND, request);
+            }
+        } else {
+            return new GlobalResponseHandler().handleResponse("User with id: " + userId + " not found.", HttpStatus.NOT_FOUND, request);
+        }
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'FATHER')")
     public ResponseEntity<?> createFamily(@RequestBody Family newFamily, HttpServletRequest request) {
