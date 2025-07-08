@@ -1,4 +1,4 @@
-package com.project.demo.rest.clasificacionbasura.config;
+package com.project.demo.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
