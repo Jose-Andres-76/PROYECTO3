@@ -15,8 +15,8 @@ public class Waste {
     @JoinColumn(name = "user_id", nullable = false)
     private User userId;
 
-    @Column(nullable = true)
-    private String urlImage;
+    @Column(nullable = true, name = "product_type")
+    private String productType;
 
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")
@@ -26,10 +26,10 @@ public class Waste {
 
     public Waste() {}
 
-    public Waste(Long id, User userId, String urlImage, java.util.Date createdAt, String answer) {
+    public Waste(Long id, User userId, String productType, java.util.Date createdAt, String answer) {
         this.id = id;
         this.userId = userId;
-        this.urlImage = urlImage;
+        this.productType = productType;
         this.createdAt = createdAt;
         this.answer = answer;
     }
@@ -50,12 +50,12 @@ public class Waste {
         this.userId = userId;
     }
 
-    public String getUrlImage() {
-        return urlImage;
+    public String getProductType() {
+        return productType;
     }
 
-    public void setUrlImage(String urlImage) {
-        this.urlImage = urlImage;
+    public void setProductType(String productType) {
+        this.productType = productType;
     }
 
     public java.util.Date getCreatedAt() {
@@ -79,7 +79,7 @@ public class Waste {
         return "Waste{" +
                 "id=" + id +
                 ", userId=" + userId +
-                ", urlImage='" + urlImage + '\'' +
+                ", productType='" + productType + '\'' +
                 ", createdAt=" + createdAt +
                 ", answer='" + answer + '\'' +
                 '}';
