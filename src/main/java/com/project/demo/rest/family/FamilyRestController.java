@@ -57,7 +57,6 @@ public class FamilyRestController {
         }
     }
 
-    //we add a method to get the multiple families of the authenticated user
     @GetMapping("/my-family/{userId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getFamilyByUserId(@PathVariable Long userId, HttpServletRequest request) {
