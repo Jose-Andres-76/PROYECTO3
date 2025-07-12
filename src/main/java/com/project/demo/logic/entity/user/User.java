@@ -38,7 +38,7 @@ public class User implements UserDetails {
     private String publicIdCloudinary;
     private int points;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = true)
     @Enumerated(EnumType.STRING)
     private AuthAccess access;
 
