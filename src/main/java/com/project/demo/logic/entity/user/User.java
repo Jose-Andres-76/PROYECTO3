@@ -1,6 +1,6 @@
 package com.project.demo.logic.entity.user;
-import com.project.demo.logic.entity.order.Order;
 import com.project.demo.logic.entity.rol.Role;
+import com.project.demo.logic.entity.rol.RoleEnum;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -23,7 +23,7 @@ public class User implements UserDetails {
     @Column(unique = true, length = 100, nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
     @CreationTimestamp
@@ -38,6 +38,16 @@ public class User implements UserDetails {
     private String publicIdCloudinary;
     private int points;
 
+    @Column(unique = true, nullable = true)
+    @Enumerated(EnumType.STRING)
+    private AuthAccess access;
+
+    private String providerId;
+
+    private String emailVerified;
+
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role.getName().toString());
@@ -48,8 +58,6 @@ public class User implements UserDetails {
     @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
     private Role role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private List<Order> orders;
 
     // Constructors
     public User() {}
@@ -141,13 +149,6 @@ public class User implements UserDetails {
         return role;
     }
 
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
-    }
 
     public User setRole(Role role) {
         this.role = role;
@@ -176,6 +177,30 @@ public class User implements UserDetails {
         this.publicIdCloudinary = publicIdCloudinary;
     }
 
+    public AuthAccess getAccess() {
+        return access;
+    }
+
+    public void setAccess(AuthAccess access) {
+        this.access = access;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
+
+    public String getEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(String emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -189,8 +214,10 @@ public class User implements UserDetails {
                 ", urlImage='" + urlImage + '\'' +
                 ", publicIdCloudinary='" + publicIdCloudinary + '\'' +
                 ", points=" + points +
+                ", access=" + access +
+                ", providerId='" + providerId + '\'' +
+                ", emailVerified='" + emailVerified + '\'' +
                 ", role=" + role +
-                ", orders=" + orders +
                 '}';
     }
 }
