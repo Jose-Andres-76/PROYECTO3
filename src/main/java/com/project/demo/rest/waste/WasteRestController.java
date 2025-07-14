@@ -7,6 +7,11 @@ import com.project.demo.logic.entity.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.project.demo.logic.entity.http.GlobalResponseHandler;
+import com.project.demo.logic.entity.http.Meta;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -174,5 +179,48 @@ public class WasteRestController {
 
         public long getTotalCount() { return totalCount; }
         public void setTotalCount(long totalCount) { this.totalCount = totalCount; }
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getAllWaste(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        List<Waste> wasteList = wasteRepository.findAll(pageable).getContent();
+        int totalElements = (int) wasteRepository.count();
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+        Meta meta = new Meta(request.getMethod(), request.getRequestURL().toString());
+        meta.setTotalPages(totalPages);
+        meta.setTotalElements(totalElements);
+        meta.setPageNumber(page);
+        meta.setPageSize(size);
+        return new GlobalResponseHandler().handleResponse("Waste listed.", wasteList, HttpStatus.OK, meta);
+    }
+
+    @GetMapping("/user")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getWasteByUser(
+            @RequestParam Long userId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        List<Waste> wasteList = wasteRepository.findByUserId(userId, pageable);
+        int totalElements = wasteRepository.countByUserId(userId);
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+        Meta meta = new Meta(request.getMethod(), request.getRequestURL().toString());
+        meta.setTotalPages(totalPages);
+        meta.setTotalElements(totalElements);
+        meta.setPageNumber(page);
+        meta.setPageSize(size);
+        return new GlobalResponseHandler().handleResponse("Waste for user listed.", wasteList, HttpStatus.OK, meta);
+    }
+
+    @PostMapping
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> createWaste(@RequestBody Waste newWaste, HttpServletRequest request) {
+        Waste savedWaste = wasteRepository.save(newWaste);
+        return new GlobalResponseHandler().handleResponse("Waste created successfully.", savedWaste, HttpStatus.CREATED, request);
     }
 }

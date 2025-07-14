@@ -4,6 +4,7 @@ import com.project.demo.logic.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,4 +25,11 @@ public interface WasteRepository extends JpaRepository<Waste, Long> {
     long countByUserId(User user);
 
     long countByProductType(String productType);
+
+    @Query("SELECT w FROM Waste w WHERE w.userId.id = ?1")
+    List<Waste> findByUserId(Long userId, Pageable pageable);
+
+    @Query("SELECT COUNT(w) FROM Waste w WHERE w.userId.id = ?1")
+    int countByUserId(Long userId);
 }
+
