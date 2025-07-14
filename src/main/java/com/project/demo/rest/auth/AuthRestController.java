@@ -5,6 +5,7 @@ import com.project.demo.logic.entity.auth.JwtService;
 import com.project.demo.logic.entity.rol.Role;
 import com.project.demo.logic.entity.rol.RoleEnum;
 import com.project.demo.logic.entity.rol.RoleRepository;
+import com.project.demo.logic.entity.user.AuthAccess;
 import com.project.demo.logic.entity.user.LoginResponse;
 import com.project.demo.logic.entity.user.User;
 import com.project.demo.logic.entity.user.UserRepository;
@@ -135,6 +136,7 @@ public class AuthRestController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Role not found");
         }
         user.setRole(optionalRole.get());
+        user.setAccess(AuthAccess.LOCAL);
         User savedUser = userRepository.save(user);
         return ResponseEntity.ok(savedUser);
     }
