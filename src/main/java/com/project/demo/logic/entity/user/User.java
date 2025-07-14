@@ -1,5 +1,6 @@
 package com.project.demo.logic.entity.user;
 import com.project.demo.logic.entity.rol.Role;
+import com.project.demo.logic.entity.rol.RoleEnum;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -22,7 +23,7 @@ public class User implements UserDetails {
     @Column(unique = true, length = 100, nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
     @CreationTimestamp
@@ -34,8 +35,18 @@ public class User implements UserDetails {
     private Date updatedAt;
 
     private String urlImage;
-
+    private String publicIdCloudinary;
     private int points;
+
+    @Column(unique = true, nullable = true)
+    @Enumerated(EnumType.STRING)
+    private AuthAccess access;
+
+    private String providerId;
+
+    private String emailVerified;
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -157,6 +168,39 @@ public class User implements UserDetails {
     public void setPoints(int points) {
         this.points = points;
     }
+
+    public String getPublicIdCloudinary() {
+        return publicIdCloudinary;
+    }
+
+    public void setPublicIdCloudinary(String publicIdCloudinary) {
+        this.publicIdCloudinary = publicIdCloudinary;
+    }
+
+    public AuthAccess getAccess() {
+        return access;
+    }
+
+    public void setAccess(AuthAccess access) {
+        this.access = access;
+    }
+
+    public String getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
+
+    public String getEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(String emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -168,7 +212,11 @@ public class User implements UserDetails {
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", urlImage='" + urlImage + '\'' +
+                ", publicIdCloudinary='" + publicIdCloudinary + '\'' +
                 ", points=" + points +
+                ", access=" + access +
+                ", providerId='" + providerId + '\'' +
+                ", emailVerified='" + emailVerified + '\'' +
                 ", role=" + role +
                 '}';
     }
