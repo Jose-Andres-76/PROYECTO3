@@ -99,5 +99,4 @@ public class Reward {
                 ", updatedAt=" + updatedAt +
                 '}';
     }
-
 }

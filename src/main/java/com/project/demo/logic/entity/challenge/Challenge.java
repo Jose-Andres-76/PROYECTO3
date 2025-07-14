@@ -18,7 +18,7 @@ public class Challenge {
     private Family familyId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "game_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "game_id", referencedColumnName = "id")
     private Game gameId;
 
     @Column(nullable = false)
