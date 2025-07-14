@@ -62,10 +62,5 @@ public class SonSeeder implements ApplicationListener<ContextRefreshedEvent> {
         user.setRole(optionalRole.get());
 
         userRepository.save(user);
-        System.out.println("Son user created: " + user.getName() + " " + user.getLastname());
-
-
     }
-
-
 }

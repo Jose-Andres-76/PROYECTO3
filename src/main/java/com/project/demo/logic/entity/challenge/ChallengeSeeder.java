@@ -32,20 +32,31 @@ public class ChallengeSeeder implements ApplicationListener<ContextRefreshedEven
 
     private void createChallenges() {
         if (challengeRepository.count() == 0) {
+            Challenge challenge1 = new Challenge();
+
             Optional<Family> optionalFamily = familyRepository.findById(1L);
-            Optional<Game> optionalGame = gameRepository.findByName(GameEnum.ECO_TRIVIA);
-
-            // Only create challenge if both Family and Game exist
-            if (optionalFamily.isPresent() && optionalGame.isPresent()) {
-                Challenge challenge1 = new Challenge();
-                challenge1.setFamily(optionalFamily.get());
-                challenge1.setGame(optionalGame.get());
-                challenge1.setPoints(10);
-                challenge1.setChallengeStatus(false);
-                challenge1.setDescription("Complete the ECO TRIVIA game with less than 2 errors to earn points.");
-
-                challengeRepository.save(challenge1);
+            if (optionalFamily.isPresent()) {
+                Family family = optionalFamily.get();
+                challenge1.setFamily(family);
+            } else {
+                challenge1.setFamily(null);
             }
+
+            Optional <Game> optionalGame = gameRepository.findByName(GameEnum.ECO_TRIVIA);
+            if (optionalGame.isPresent()) {
+                Game game = optionalGame.get();
+                challenge1.setGame(game);
+            } else {
+                challenge1.setGame(null);
+            }
+
+            challenge1.setPoints(10);
+            challenge1.setChallengeStatus(false);
+            challenge1.setDescription("Complete the ECO TRIVIA game with less than 2 errors to earn points.");
+
+            challengeRepository.save(challenge1);
         }
+
     }
+
 }

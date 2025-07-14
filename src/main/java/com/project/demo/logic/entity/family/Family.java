@@ -8,15 +8,14 @@ import jakarta.persistence.*;
 public class Family {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_son_", referencedColumnName = "id")
+    @ManyToOne
+    @JoinColumn(name = "id_son_", referencedColumnName = "id", nullable = true)
     private User idSon;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_father_", referencedColumnName = "id")
+    @ManyToOne
+    @JoinColumn(name = "id_father_", referencedColumnName = "id", nullable = false)
     private User idFather;
 
     public Family() {

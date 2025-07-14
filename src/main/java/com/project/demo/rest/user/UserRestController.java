@@ -2,8 +2,6 @@ package com.project.demo.rest.user;
 
 import com.project.demo.logic.entity.http.GlobalResponseHandler;
 import com.project.demo.logic.entity.http.Meta;
-import com.project.demo.logic.entity.rol.Role;
-import com.project.demo.logic.entity.rol.RoleRepository;
 import com.project.demo.logic.entity.user.User;
 import com.project.demo.logic.entity.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,9 +24,6 @@ import java.util.Optional;
 public class UserRestController {
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -64,38 +59,12 @@ public class UserRestController {
     @PutMapping("/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'FATHER')")
     public ResponseEntity<?> updateUser(@PathVariable Long userId, @RequestBody User user, HttpServletRequest request) {
-        System.out.println("Llegue a user");
-        System.out.println(userId);
-
-        System.out.println(user);
-        Optional<User> foundUser = userRepository.findById(userId);
-
-        System.out.println("user encontrado");
-        System.out.println(foundUser.get());
-
-        System.out.println(user);
-        if(foundUser.isPresent()) {
-            User updateUser= foundUser.get();
-//            updateUser.setName(user.getName());
-//            updateUser.setEmail(user.getEmail());
-//            updateUser.setPassword(passwordEncoder.encode(user.getPassword()));
-//            updateUser.setPoints(user.getPoints());
-//            System.out.println("User actualizar");
-//            System.out.println(foundUser.get());
-
-            updateUser.setName(user.getName());
-            updateUser.setLastname(user.getLastname());
-            updateUser.setEmail(user.getEmail());
-            updateUser.setPassword(passwordEncoder.encode(user.getPassword()));
-            updateUser.setPoints(user.getPoints());
-            if (user.getRole() != null && user.getRole().getId() != null) {
-                Role role = roleRepository.findById(user.getRole().getId())
-                        .orElseThrow(() -> new RuntimeException("Role not found"));
-                updateUser.setRole(role);
-            }
-            userRepository.save(updateUser);
+        Optional<User> foundOrder = userRepository.findById(userId);
+        if(foundOrder.isPresent()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
             return new GlobalResponseHandler().handleResponse("User updated successfully",
-                    updateUser, HttpStatus.OK, request);
+                    user, HttpStatus.OK, request);
         } else {
             return new GlobalResponseHandler().handleResponse("User id " + userId + " not found"  ,
                     HttpStatus.NOT_FOUND, request);

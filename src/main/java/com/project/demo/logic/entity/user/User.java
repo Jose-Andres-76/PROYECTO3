@@ -18,7 +18,6 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
     private String lastname;
     @Column(unique = true, length = 100, nullable = false)
@@ -48,12 +47,11 @@ public class User implements UserDetails {
     private String emailVerified;
 
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (role != null && role.getName() != null) {
-            return List.of(new SimpleGrantedAuthority("ROLE_" + role.getName().toString()));
-        }
-        return List.of();
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role.getName().toString());
+        return List.of(authority);
     }
 
     @ManyToOne(fetch = FetchType.EAGER)
