@@ -5,6 +5,7 @@ import com.project.demo.logic.entity.auth.JwtService;
 import com.project.demo.logic.entity.rol.Role;
 import com.project.demo.logic.entity.rol.RoleEnum;
 import com.project.demo.logic.entity.rol.RoleRepository;
+import com.project.demo.logic.entity.user.AuthAccess;
 import com.project.demo.logic.entity.user.LoginResponse;
 import com.project.demo.logic.entity.user.User;
 import com.project.demo.logic.entity.user.UserRepository;
@@ -13,6 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.web.bind.annotation.*;
+
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
@@ -33,9 +38,10 @@ public class AuthRestController {
 
     @Autowired
     private RoleRepository roleRepository;
-
     @Autowired
     private GoogleAuthenticationService googleAuthenticationService;
+
+
 
     private final AuthenticationService authenticationService;
     private final JwtService jwtService;
@@ -84,12 +90,12 @@ public class AuthRestController {
     public ResponseEntity<?> googleSuccess(OAuth2AuthenticationToken authenticationToken) {
         OAuth2User oAuth2User = authenticationToken.getPrincipal();
         LoginResponse response = googleAuthenticationService.processGoogleUser(oAuth2User);
-        
+
         // Redirect to frontend with token
         String frontendUrl = "http://localhost:4200/auth/google/callback";
-        String redirectUrl = String.format("%s?token=%s&expiresIn=%d", 
+        String redirectUrl = String.format("%s?token=%s&expiresIn=%d",
             frontendUrl, response.getToken(), response.getExpiresIn());
-        
+
         return ResponseEntity.status(HttpStatus.FOUND)
             .header("Location", redirectUrl)
             .build();
@@ -108,11 +114,30 @@ public class AuthRestController {
         String lastname = tokenData.get("lastname");
         String providerId = tokenData.get("sub");
         String picture = tokenData.get("picture");
-        
+
         LoginResponse response = googleAuthenticationService.processGoogleUserFromFrontend(
             email, name, lastname, providerId, picture);
-        
+
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/signup/son")
+    public ResponseEntity<?> registerSon(@RequestBody User user) {
+        Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
+        if (existingUser.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already in use");
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        Optional<Role> optionalRole = roleRepository.findByName(RoleEnum.SON);
+
+        if (optionalRole.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Role not found");
+        }
+        user.setRole(optionalRole.get());
+        user.setAccess(AuthAccess.LOCAL);
+        User savedUser = userRepository.save(user);
+        return ResponseEntity.ok(savedUser);
     }
 
 }
