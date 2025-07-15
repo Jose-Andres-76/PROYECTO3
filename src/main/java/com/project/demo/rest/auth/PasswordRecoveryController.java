@@ -41,7 +41,7 @@ public class PasswordRecoveryController {
         String code = body.get("code");
         String newPassword = body.get("newPassword");
         if (!recoveryService.validateCode(email, code)) {
-            return ResponseEntity.badRequest().body("Invalid Code or Expira");
+            return ResponseEntity.badRequest().body("Invalid Code");
         }
         var userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) return ResponseEntity.badRequest().body("User not found");
