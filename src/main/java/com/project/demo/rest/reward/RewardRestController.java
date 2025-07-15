@@ -32,9 +32,9 @@ public class RewardRestController {
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getAllRewards(
-        @RequestParam(defaultValue = "1") int page,
-        @RequestParam(defaultValue = "10") int size,
-                HttpServletRequest request) {
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request) {
 
         Pageable pageable = PageRequest.of(page - 1, size);
         List<Reward> rewards = rewardRepository.findAll(pageable).getContent();
