@@ -52,7 +52,6 @@ public class ChallengeRestController {
         }
     }
 
-    // A get method to retrieve challenges by the userId present in the family with the same familyID and gives the typesofGames by the game ID
     @GetMapping("/my-challenges/{userId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getChallengesByUserId(@PathVariable Long userId, HttpServletRequest request) {
@@ -63,8 +62,6 @@ public class ChallengeRestController {
             return new GlobalResponseHandler().handleResponse("No challenges found for user with id: " + userId, HttpStatus.NOT_FOUND, request);
         }
     }
-
-
 
     @PostMapping
     @PreAuthorize("isAuthenticated() && hasAnyRole('ADMIN', 'FATHER')")
@@ -80,6 +77,9 @@ public class ChallengeRestController {
         Optional<Challenge> existingChallengeOpt = challengeRepository.findById(id);
         if (existingChallengeOpt.isPresent()) {
             Challenge existingChallenge = existingChallengeOpt.get();
+            if (challenge.getFamily() != null) {
+                existingChallenge.setFamily(challenge.getFamily());
+            }
             if (challenge.getGame() != null) {
                 existingChallenge.setGame(challenge.getGame());
             }
