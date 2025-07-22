@@ -64,10 +64,6 @@ public class UserRestController {
     @PutMapping("/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'FATHER')")
     public ResponseEntity<?> updateUser(@PathVariable Long userId, @RequestBody User user, HttpServletRequest request) {
-        System.out.println("Llegue a user");
-        System.out.println(userId);
-
-        System.out.println(user);
         Optional<User> foundUser = userRepository.findById(userId);
 
         System.out.println("user encontrado");
@@ -98,7 +94,7 @@ public class UserRestController {
 
 
     @DeleteMapping("/{userId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'FATHER')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable Long userId, HttpServletRequest request) {
         Optional<User> foundOrder = userRepository.findById(userId);
         if(foundOrder.isPresent()) {
