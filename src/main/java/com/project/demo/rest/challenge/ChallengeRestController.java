@@ -4,6 +4,8 @@ import com.project.demo.logic.entity.challenge.Challenge;
 import com.project.demo.logic.entity.challenge.ChallengeRepository;
 import com.project.demo.logic.entity.http.GlobalResponseHandler;
 import com.project.demo.logic.entity.http.Meta;
+import com.project.demo.logic.entity.user.User;
+import com.project.demo.logic.entity.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +23,8 @@ import java.util.Optional;
 public class ChallengeRestController {
     @Autowired
     private ChallengeRepository challengeRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
@@ -52,19 +56,17 @@ public class ChallengeRestController {
         }
     }
 
-    // A get method to retrieve challenges by the userId present in the family with the same familyID and gives the typesofGames by the game ID
     @GetMapping("/my-challenges/{userId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getChallengesByUserId(@PathVariable Long userId, HttpServletRequest request) {
-        List<Challenge> challenges = challengeRepository.findByFamilyId_UserId(userId);
-        if (!challenges.isEmpty()) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isPresent()) {
+            List<Challenge> challenges = challengeRepository.findByFamilyId_UserId(userId);
             return new GlobalResponseHandler().handleResponse("Challenges found for user with id: " + userId, challenges, HttpStatus.OK, request);
         } else {
             return new GlobalResponseHandler().handleResponse("No challenges found for user with id: " + userId, HttpStatus.NOT_FOUND, request);
         }
     }
-
-
 
     @PostMapping
     @PreAuthorize("isAuthenticated() && hasAnyRole('ADMIN', 'FATHER')")
@@ -80,6 +82,9 @@ public class ChallengeRestController {
         Optional<Challenge> existingChallengeOpt = challengeRepository.findById(id);
         if (existingChallengeOpt.isPresent()) {
             Challenge existingChallenge = existingChallengeOpt.get();
+            if (challenge.getFamily() != null) {
+                existingChallenge.setFamily(challenge.getFamily());
+            }
             if (challenge.getGame() != null) {
                 existingChallenge.setGame(challenge.getGame());
             }
