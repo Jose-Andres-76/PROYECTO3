@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,10 +51,11 @@ public class FamilyRestController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getFamilyById(@PathVariable Long id, HttpServletRequest request) {
         Optional<Family> family = familyRepository.findById(id);
+
         if (family.isPresent()) {
             return new GlobalResponseHandler().handleResponse("Family found.", family.get(), HttpStatus.OK, request);
         } else {
-            return new GlobalResponseHandler().handleResponse("Family with id: " + id + " not found.", HttpStatus.NOT_FOUND, request);
+            return new GlobalResponseHandler().handleResponse("Family with id: " + id + " not found.",family, HttpStatus.OK, request);
         }
     }
 
@@ -66,7 +68,8 @@ public class FamilyRestController {
             if (!families.isEmpty()) {
                 return new GlobalResponseHandler().handleResponse("Families found for user with id: " + userId, families, HttpStatus.OK, request);
             } else {
-                return new GlobalResponseHandler().handleResponse("No families found for user with id: " + userId, HttpStatus.NOT_FOUND, request);
+                List<Family> familyNotFound= new ArrayList<>();
+                return new GlobalResponseHandler().handleResponse("No families found for user with id: " + userId,familyNotFound, HttpStatus.OK, request);
             }
         } else {
             return new GlobalResponseHandler().handleResponse("User with id: " + userId + " not found.", HttpStatus.NOT_FOUND, request);
@@ -106,8 +109,6 @@ public class FamilyRestController {
                 existingFamily.setFather(family.getFather());
             }
             if (family.getSon() != null) {
-//                System.out.println("HIJO VERLO");
-//                System.out.println(family.getSon());
                 existingFamily.setSon(family.getSon());
             }
             Family updatedFamily = familyRepository.save(existingFamily);

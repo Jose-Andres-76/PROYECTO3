@@ -28,7 +28,8 @@ public class emailGeneralInfo {
         EmailModel sendmail = new EmailModel();
         try {
             sendmail.setSubject("Información General de Eco Asistente AI");
-            sendmail.setText("Somos una aplicación dedicada a la educación del reciclaje, fomentando el conocimiento y el crecimiento familiar.");
+            sendmail.setText("Somos una aplicación dedicada a la educación del reciclaje, fomentando el conocimiento y el crecimiento familiar.\n" +
+                    "Nuestro asistente EcoAsitenteIA, nos permite colaborar con el medio ambiente y los ciudadanos, para poder identificar, clasificar y  recomendar sobre el manejo de residuos.");
             sendmail.setTo(email);
             emailService.sendSimpleEmail(sendmail);
             return new GlobalResponseHandler().handleResponse("Email sent successfully to " + sendmail.getTo(), sendmail, HttpStatus.OK, request);

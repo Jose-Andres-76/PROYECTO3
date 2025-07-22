@@ -44,5 +44,4 @@ public class Game {
                 ", description='" + description + '\'' +
                 '}';
     }
-
 }

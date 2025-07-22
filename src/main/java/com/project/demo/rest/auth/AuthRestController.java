@@ -72,7 +72,7 @@ public class AuthRestController {
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
         if (existingUser.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already in use");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already in use");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
