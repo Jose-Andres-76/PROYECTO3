@@ -38,6 +38,8 @@ public class User implements UserDetails {
     private String publicIdCloudinary;
     private int points;
 
+    private int age;
+
     @Column
     @Enumerated(EnumType.STRING)
     private AuthAccess access;
@@ -201,6 +203,14 @@ public class User implements UserDetails {
         this.emailVerified = emailVerified;
     }
 
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -214,6 +224,7 @@ public class User implements UserDetails {
                 ", urlImage='" + urlImage + '\'' +
                 ", publicIdCloudinary='" + publicIdCloudinary + '\'' +
                 ", points=" + points +
+                ", age=" + age +
                 ", access=" + access +
                 ", providerId='" + providerId + '\'' +
                 ", emailVerified='" + emailVerified + '\'' +
