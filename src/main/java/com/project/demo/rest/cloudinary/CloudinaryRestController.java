@@ -29,14 +29,6 @@ public class CloudinaryRestController {
         this.cloudinaryService = cloudinaryService;
     }
 
-
-    /**
-     *
-     * @param request, just the  http response
-     *                 this option is just to verify that the cloudinary option is up and running
-     * @return
-     * Response
-     */
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getAll(
@@ -46,14 +38,6 @@ public class CloudinaryRestController {
                  HttpStatus.OK, request);
     }
 
-
-    /**
-     *
-     * @param id, id of the user
-     * @param file, image send to be uploaded
-     * @return response
-     *
-     */
     @PostMapping("/user/{id}")
     public ResponseEntity<?> upload(
             @PathVariable Long id,
@@ -62,13 +46,7 @@ public class CloudinaryRestController {
         return ResponseEntity.ok(cloudinaryService.upload(id, file) );
     }
 
-//
-//    /**
-//     *
-//     * @param publicId
-//     * @param file
-//     * This two what they do is Basically call the exact image from the public id from cloudinary
-//     */
+
     @PutMapping("/user/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updateImage(
@@ -76,31 +54,8 @@ public class CloudinaryRestController {
             @RequestParam("image") MultipartFile file) {
         return ResponseEntity.ok(cloudinaryService.overwrite(id,file));
     }
-//
-//
-//    /**
-//     *
-//     * @param publicId
-//     * This one allocated the exact image that we can to change in cloudinary
-//     */
-//
-//    @GetMapping("/image/{publicId}")
-//    @PreAuthorize("isAuthenticated()")
-//    public ResponseEntity<String> getImage(@PathVariable String publicId) {
-//        return ResponseEntity.ok(cloudinaryService.getImageUrl(publicId));
-//    }
-//
-//    /**
-//     *
-//     * @param publicId
-//     * This method deletes the image from the server
-//     */
-//    @DeleteMapping("/image/{publicId}")
-//    @PreAuthorize("isAuthenticated()")
-//    public ResponseEntity<Map> deleteImage(@PathVariable String publicId) {
-//        return ResponseEntity.ok(cloudinaryService.delete(publicId));
-//    }
-//
+
+
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public User authenticatedUser() {
