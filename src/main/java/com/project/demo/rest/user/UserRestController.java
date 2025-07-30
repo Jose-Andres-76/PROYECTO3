@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -112,6 +113,28 @@ public class UserRestController {
     public User authenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (User) authentication.getPrincipal();
+    }
+
+    @PatchMapping("/{id}/points")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FATHER', 'SON')")
+    public ResponseEntity<?> updateUserPoints(@PathVariable Long id, @RequestBody Map<String, Integer> payload, HttpServletRequest request) {
+        if (!payload.containsKey("points")) {
+            return ResponseEntity.badRequest().body("El campo 'points' es obligatorio");
+        }
+
+        int newPoints = payload.get("points");
+
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (!optionalUser.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+        }
+
+        User user = optionalUser.get();
+        user.setPoints(newPoints);
+        userRepository.save(user);
+
+        return new GlobalResponseHandler().handleResponse("Puntos actualizados correctamente",
+               HttpStatus.OK, request);
     }
 
 }
