@@ -39,6 +39,12 @@ public class TextGame {
         this.answer = answer;
     }
 
+    public TextGame(String text, String answer, Game game) {
+        this.text = text;
+        this.answer = answer;
+        this.game = game;
+    }
+
     public Long getId() {
         return id;
     }
