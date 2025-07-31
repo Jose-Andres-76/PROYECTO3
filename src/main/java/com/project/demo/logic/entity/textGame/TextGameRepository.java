@@ -1,4 +1,6 @@
 package com.project.demo.logic.entity.textGame;
 
-public interface TextGameRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TextGameRepository extends JpaRepository<TextGame,Long> {
 }
