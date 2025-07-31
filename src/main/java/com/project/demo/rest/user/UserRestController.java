@@ -137,4 +137,16 @@ public class UserRestController {
                HttpStatus.OK, request);
     }
 
+    @GetMapping("/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FATHER', 'SON')")
+    public ResponseEntity<?> getUserById(@PathVariable Long userId, HttpServletRequest request) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            return new GlobalResponseHandler().handleResponse(
+                    "Usuario encontrado", userOptional.get(), HttpStatus.OK, request);
+        } else {
+            return new GlobalResponseHandler().handleResponse(
+                    "Usuario no encontrado", HttpStatus.NOT_FOUND, request);
+        }
+    }
 }
