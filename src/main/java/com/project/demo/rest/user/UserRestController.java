@@ -77,8 +77,16 @@ public class UserRestController {
             updateUser.setName(user.getName());
             updateUser.setLastname(user.getLastname());
             updateUser.setEmail(user.getEmail());
-            updateUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+                if (user.getPassword().length() < 6) {
+                    return new GlobalResponseHandler().handleResponse("Password must be at least 6 characters long",
+                            HttpStatus.BAD_REQUEST, request);
+                }
+            } else {
+                user.setPassword(updateUser.getPassword());
+            }
             updateUser.setPoints(user.getPoints());
+            updateUser.setAge(user.getAge());
             if (user.getRole() != null && user.getRole().getId() != null) {
                 Role role = roleRepository.findById(user.getRole().getId())
                         .orElseThrow(() -> new RuntimeException("Role not found"));
