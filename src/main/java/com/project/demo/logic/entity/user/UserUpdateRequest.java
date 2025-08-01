@@ -52,4 +52,15 @@ public class UserUpdateRequest {
     public void setImage(MultipartFile image) {
         this.image = image;
     }
+
+    @Override
+    public String toString() {
+        return "UserUpdateRequest{" +
+                "name='" + name + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", age=" + age +
+                ", password='" + password + '\'' +
+                ", image=" + image +
+                '}';
+    }
 }

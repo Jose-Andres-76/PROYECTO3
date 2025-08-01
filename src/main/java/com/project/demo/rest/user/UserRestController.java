@@ -108,6 +108,8 @@ public class UserRestController {
             @ModelAttribute UserUpdateRequest userUpdateRequest,
             HttpServletRequest request) {
 
+        System.out.println("LLEGUE CON PICTURE Y ESTO TRAE");
+        System.out.println(userUpdateRequest);
         Optional<User> foundUser = userRepository.findById(userId);
 
         if (foundUser.isPresent()) {
@@ -124,7 +126,7 @@ public class UserRestController {
             updateUser.setName(userUpdateRequest.getName());
             updateUser.setLastname(userUpdateRequest.getLastname());
             updateUser.setAge(userUpdateRequest.getAge());
-            if(!(updateUser.getPassword() ==null)){
+            if(userUpdateRequest.getPassword() !=null){
                 updateUser.setPassword(passwordEncoder.encode(userUpdateRequest.getPassword()));
             }
 
@@ -144,9 +146,7 @@ public class UserRestController {
         Optional<User> foundUser = userRepository.findById(userId);
 
         System.out.println("UPDATE EDITH PROFILE");
-        System.out.println("user encontrado");
-        System.out.println(foundUser.get());
-
+        System.out.println("user enviado");
         System.out.println(user);
         if(foundUser.isPresent()) {
             User updateUser= foundUser.get();
@@ -154,7 +154,7 @@ public class UserRestController {
             updateUser.setName(user.getName());
             updateUser.setLastname(user.getLastname());
             updateUser.setAge(user.getAge());
-            if(!(user.getPassword() ==null)){
+            if(user.getPassword()!=null){
                 updateUser.setPassword(passwordEncoder.encode(user.getPassword()));
             }
 
