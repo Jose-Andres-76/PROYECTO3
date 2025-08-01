@@ -7,6 +7,7 @@ import com.project.demo.logic.entity.rol.RoleRepository;
 import com.project.demo.logic.entity.user.User;
 import com.project.demo.logic.entity.user.UserRepository;
 import com.project.demo.logic.entity.user.UserUpdateRequest;
+import com.project.demo.services.Utils.RegexChecker;
 import com.project.demo.services.cloudinary.CloudinaryService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import java.util.Optional;
 
@@ -39,6 +42,8 @@ public class UserRestController {
 
     @Autowired
     private CloudinaryService cloudinaryService;
+    @Autowired
+    private RegexChecker regexChecker;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN')")
@@ -110,7 +115,7 @@ public class UserRestController {
 
             MultipartFile file = userUpdateRequest.getImage();
 
-            if (updateUser.getUrlImage() == null || updateUser.getUrlImage().isEmpty()) {
+            if (updateUser.getUrlImage() == null || updateUser.getUrlImage().isEmpty() || regexChecker.checkGoogleImage(updateUser.getUrlImage())) {
                 updateUser = cloudinaryService.upload(userId, file);
             } else {
                 updateUser = cloudinaryService.overwrite(userId, file);
@@ -119,8 +124,9 @@ public class UserRestController {
             updateUser.setName(userUpdateRequest.getName());
             updateUser.setLastname(userUpdateRequest.getLastname());
             updateUser.setAge(userUpdateRequest.getAge());
-
-
+            if(!(updateUser.getPassword() ==null)){
+                updateUser.setPassword(passwordEncoder.encode(userUpdateRequest.getPassword()));
+            }
 
             userRepository.save(updateUser);
 
@@ -148,14 +154,16 @@ public class UserRestController {
             updateUser.setName(user.getName());
             updateUser.setLastname(user.getLastname());
             updateUser.setAge(user.getAge());
+            if(!(user.getPassword() ==null)){
+                updateUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            }
 
             if (user.getRole() != null && user.getRole().getId() != null) {
                 Role role = roleRepository.findById(user.getRole().getId())
                         .orElseThrow(() -> new RuntimeException("Role not found"));
                 updateUser.setRole(role);
             }
-            System.out.println("ANTES DE GRABAR");
-            System.out.println(updateUser);
+
             userRepository.save(updateUser);
             return new GlobalResponseHandler().handleResponse("User updated successfully",
                     updateUser, HttpStatus.OK, request);
@@ -165,7 +173,7 @@ public class UserRestController {
         }
     }
 
-    
+
 
     @DeleteMapping("/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN')")
@@ -187,5 +195,8 @@ public class UserRestController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (User) authentication.getPrincipal();
     }
+
+
+
 
 }
