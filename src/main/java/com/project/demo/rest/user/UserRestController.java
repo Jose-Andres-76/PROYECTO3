@@ -85,7 +85,9 @@ public class UserRestController {
             } else {
                 user.setPassword(updateUser.getPassword());
             }
-            updateUser.setPoints(user.getPoints());
+            if (user.getPoints() != 0) {
+                updateUser.setPoints(user.getPoints());
+            }
             updateUser.setAge(user.getAge());
             if (user.getRole() != null && user.getRole().getId() != null) {
                 Role role = roleRepository.findById(user.getRole().getId())
