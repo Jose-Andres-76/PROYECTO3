@@ -119,7 +119,6 @@ public class UserRestController {
             updateUser.setName(userUpdateRequest.getName());
             updateUser.setLastname(userUpdateRequest.getLastname());
             updateUser.setAge(userUpdateRequest.getAge());
-            updateUser.setPoints(userUpdateRequest.getPoints());
 
 
 
@@ -149,7 +148,6 @@ public class UserRestController {
             updateUser.setName(user.getName());
             updateUser.setLastname(user.getLastname());
             updateUser.setAge(user.getAge());
-            updateUser.setPoints(user.getPoints());
 
             if (user.getRole() != null && user.getRole().getId() != null) {
                 Role role = roleRepository.findById(user.getRole().getId())
@@ -167,7 +165,7 @@ public class UserRestController {
         }
     }
 
-
+    
 
     @DeleteMapping("/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN')")

@@ -6,14 +6,12 @@ public class UserUpdateRequest {
 
     private String name;
     private String lastname;
-    private Integer age;
-    private Integer points;
-    private Long roleId;
+    private Integer  age;
+    private String password;
 
     private MultipartFile image;
 
-    public UserUpdateRequest() {
-    }
+    public UserUpdateRequest() {};
 
     public String getName() {
         return name;
@@ -31,22 +29,21 @@ public class UserUpdateRequest {
         this.lastname = lastname;
     }
 
-    public Integer getAge() {
+    public int getAge() {
         return age;
     }
 
-    public void setAge(Integer age) {
+    public void setAge(Integer  age) {
         this.age = age;
     }
 
-    public Integer getPoints() {
-        return points;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPoints(Integer points) {
-        this.points = points;
+    public void setPassword(String password) {
+        this.password = password;
     }
-
 
     public MultipartFile getImage() {
         return image;
