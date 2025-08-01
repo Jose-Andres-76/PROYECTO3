@@ -108,8 +108,6 @@ public class UserRestController {
             @ModelAttribute UserUpdateRequest userUpdateRequest,
             HttpServletRequest request) {
 
-        System.out.println("LLEGUE CON PICTURE Y ESTO TRAE");
-        System.out.println(userUpdateRequest);
         Optional<User> foundUser = userRepository.findById(userId);
 
         if (foundUser.isPresent()) {
@@ -144,10 +142,6 @@ public class UserRestController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updateUserProfile(@PathVariable Long userId, @RequestBody User user, HttpServletRequest request) {
         Optional<User> foundUser = userRepository.findById(userId);
-
-        System.out.println("UPDATE EDITH PROFILE");
-        System.out.println("user enviado");
-        System.out.println(user);
         if(foundUser.isPresent()) {
             User updateUser= foundUser.get();
 
