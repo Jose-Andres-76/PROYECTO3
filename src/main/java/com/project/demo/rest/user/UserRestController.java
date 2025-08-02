@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -84,8 +85,16 @@ public class UserRestController {
             updateUser.setName(user.getName());
             updateUser.setLastname(user.getLastname());
             updateUser.setEmail(user.getEmail());
-            updateUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+                if (user.getPassword().length() < 6) {
+                    return new GlobalResponseHandler().handleResponse("Password must be at least 6 characters long",
+                            HttpStatus.BAD_REQUEST, request);
+                }
+            } else {
+                user.setPassword(updateUser.getPassword());
+            }
             updateUser.setPoints(user.getPoints());
+            updateUser.setAge(user.getAge());
             if (user.getRole() != null && user.getRole().getId() != null) {
                 Role role = roleRepository.findById(user.getRole().getId())
                         .orElseThrow(() -> new RuntimeException("Role not found"));
@@ -189,8 +198,38 @@ public class UserRestController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (User) authentication.getPrincipal();
     }
+    @PatchMapping("/{id}/points")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FATHER', 'SON')")
+    public ResponseEntity<?> updateUserPoints(@PathVariable Long id, @RequestBody Map<String, Integer> payload, HttpServletRequest request) {
+        if (!payload.containsKey("points")) {
+            return ResponseEntity.badRequest().body("El campo 'points' es obligatorio");
+        }
 
+        int newPoints = payload.get("points");
 
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (!optionalUser.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+        }
 
+        User user = optionalUser.get();
+        user.setPoints(newPoints);
+        userRepository.save(user);
 
+        return new GlobalResponseHandler().handleResponse("Puntos actualizados correctamente",
+               HttpStatus.OK, request);
+    }
+
+    @GetMapping("/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FATHER', 'SON')")
+    public ResponseEntity<?> getUserById(@PathVariable Long userId, HttpServletRequest request) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            return new GlobalResponseHandler().handleResponse(
+                    "Usuario encontrado", userOptional.get(), HttpStatus.OK, request);
+        } else {
+            return new GlobalResponseHandler().handleResponse(
+                    "Usuario no encontrado", HttpStatus.NOT_FOUND, request);
+        }
+    }
 }

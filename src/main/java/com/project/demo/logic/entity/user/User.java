@@ -37,6 +37,7 @@ public class User implements UserDetails {
     private String urlImage;
     private String publicIdCloudinary;
     private int points;
+    private int age;
 
     private int age;
 
@@ -169,6 +170,12 @@ public class User implements UserDetails {
     }
     public void setPoints(int points) {
         this.points = points;
+    }
+    public int getAge() {
+        return age;
+    }
+    public void setAge(int age) {
+        this.age = age;
     }
 
     public String getPublicIdCloudinary() {

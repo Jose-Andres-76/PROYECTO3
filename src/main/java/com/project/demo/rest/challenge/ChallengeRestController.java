@@ -77,7 +77,7 @@ public class ChallengeRestController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("isAuthenticated() && hasAnyRole('ADMIN', 'FATHER')")
+    @PreAuthorize("isAuthenticated() && hasAnyRole('ADMIN', 'FATHER','SON')")
     public ResponseEntity<?> updateChallenge(@PathVariable Long id, @RequestBody Challenge challenge, HttpServletRequest request) {
         Optional<Challenge> existingChallengeOpt = challengeRepository.findById(id);
         if (existingChallengeOpt.isPresent()) {
