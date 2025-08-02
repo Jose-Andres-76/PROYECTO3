@@ -39,8 +39,6 @@ public class User implements UserDetails {
     private int points;
     private int age;
 
-    private int age;
-
     @Column
     @Enumerated(EnumType.STRING)
     private AuthAccess access;
@@ -208,14 +206,6 @@ public class User implements UserDetails {
 
     public void setEmailVerified(String emailVerified) {
         this.emailVerified = emailVerified;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
     }
 
     @Override
