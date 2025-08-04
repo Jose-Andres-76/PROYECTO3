@@ -1,12 +1,17 @@
 package com.project.demo.rest.waste;
 
+import com.project.demo.logic.entity.http.GlobalResponseHandler;
+import com.project.demo.logic.entity.http.Meta;
 import com.project.demo.logic.entity.waste.Waste;
 import com.project.demo.logic.entity.waste.WasteRepository;
 import com.project.demo.logic.entity.user.User;
 import com.project.demo.logic.entity.user.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -26,42 +31,68 @@ public class WasteRestController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public Page<Waste> getAllWaste(Pageable pageable) {
-        return wasteRepository.findAll(pageable);
+    public ResponseEntity<?> getAllWaste(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request) {
+
+        if (page <= 0) {
+            page = 1;
+        }
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Waste> wastePage = wasteRepository.findAll(pageable);
+        Meta meta = new Meta(request.getMethod(), request.getRequestURL().toString());
+        meta.setTotalPages(wastePage.getTotalPages());
+        meta.setTotalElements(wastePage.getTotalElements());
+        meta.setPageNumber(wastePage.getNumber() + 1);
+        meta.setPageSize(wastePage.getSize());
+
+        return new GlobalResponseHandler().handleResponse("Waste retrieved successfully",
+                wastePage.getContent(), HttpStatus.OK, meta);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('FATHER', 'ADMIN')")
-    public ResponseEntity<Waste> getWasteById(@PathVariable Long id) {
+    public ResponseEntity<?> getWasteById(@PathVariable Long id, HttpServletRequest request) {
         Optional<Waste> waste = wasteRepository.findById(id);
-        return waste.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        if (waste.isPresent()) {
+            return new GlobalResponseHandler().handleResponse("Waste found",
+                    waste.get(), HttpStatus.OK, request);
+        } else {
+            return new GlobalResponseHandler().handleResponse("Waste not found",
+                    HttpStatus.NOT_FOUND, request);
+        }
     }
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasAnyRole('FATHER', 'ADMIN')")
-    public ResponseEntity<List<Waste>> getWasteByUserId(@PathVariable Long userId) {
+    public ResponseEntity<?> getWasteByUserId(@PathVariable Long userId, HttpServletRequest request) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return new GlobalResponseHandler().handleResponse("User not found",
+                    HttpStatus.NOT_FOUND, request);
         }
         List<Waste> wasteList = wasteRepository.findByUserId(user.get());
-        return ResponseEntity.ok(wasteList);
+        return new GlobalResponseHandler().handleResponse("Waste by user retrieved successfully",
+                wasteList, HttpStatus.OK, request);
     }
 
     @GetMapping("/product-type/{productType}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Waste>> getWasteByProductType(@PathVariable String productType) {
+    public ResponseEntity<?> getWasteByProductType(@PathVariable String productType, HttpServletRequest request) {
         List<Waste> wasteList = wasteRepository.findByProductType(productType);
-        return ResponseEntity.ok(wasteList);
+        return new GlobalResponseHandler().handleResponse("Waste by product type retrieved successfully",
+                wasteList, HttpStatus.OK, request);
     }
 
     @PostMapping
     @PreAuthorize("hasAnyRole('FATHER', 'ADMIN', 'SON')")
-    public ResponseEntity<Waste> createWaste(@RequestBody WasteCreateRequest request) {
+    public ResponseEntity<?> createWaste(@RequestBody WasteCreateRequest request, HttpServletRequest httpRequest) {
         Optional<User> user = userRepository.findById(request.getUserId());
         if (user.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+            return new GlobalResponseHandler().handleResponse("User not found",
+                    HttpStatus.BAD_REQUEST, httpRequest);
         }
 
         Waste waste = new Waste();
@@ -70,15 +101,17 @@ public class WasteRestController {
         waste.setAnswer(request.getAnswer());
 
         Waste savedWaste = wasteRepository.save(waste);
-        return ResponseEntity.ok(savedWaste);
+        return new GlobalResponseHandler().handleResponse("Waste created successfully",
+                savedWaste, HttpStatus.CREATED, httpRequest);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('FATHER', 'ADMIN', 'SON')")
-    public ResponseEntity<Waste> updateWaste(@PathVariable Long id, @RequestBody WasteUpdateRequest request) {
+    public ResponseEntity<?> updateWaste(@PathVariable Long id, @RequestBody WasteUpdateRequest request, HttpServletRequest httpRequest) {
         Optional<Waste> existingWaste = wasteRepository.findById(id);
         if (existingWaste.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return new GlobalResponseHandler().handleResponse("Waste not found",
+                    HttpStatus.NOT_FOUND, httpRequest);
         }
 
         Waste waste = existingWaste.get();
@@ -90,38 +123,44 @@ public class WasteRestController {
         }
 
         Waste updatedWaste = wasteRepository.save(waste);
-        return ResponseEntity.ok(updatedWaste);
+        return new GlobalResponseHandler().handleResponse("Waste updated successfully",
+                updatedWaste, HttpStatus.OK, httpRequest);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteWaste(@PathVariable Long id) {
+    public ResponseEntity<?> deleteWaste(@PathVariable Long id, HttpServletRequest request) {
         if (!wasteRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+            return new GlobalResponseHandler().handleResponse("Waste not found",
+                    HttpStatus.NOT_FOUND, request);
         }
         wasteRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+        return new GlobalResponseHandler().handleResponse("Waste deleted successfully",
+                HttpStatus.OK, request);
     }
 
     @GetMapping("/stats/user/{userId}")
     @PreAuthorize("hasAnyRole('FATHER', 'ADMIN', 'SON')")
-    public ResponseEntity<WasteStats> getWasteStatsByUser(@PathVariable Long userId) {
+    public ResponseEntity<?> getWasteStatsByUser(@PathVariable Long userId, HttpServletRequest request) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return new GlobalResponseHandler().handleResponse("User not found",
+                    HttpStatus.NOT_FOUND, request);
         }
 
         long totalCount = wasteRepository.countByUserId(user.get());
         WasteStats stats = new WasteStats(totalCount);
-        return ResponseEntity.ok(stats);
+        return new GlobalResponseHandler().handleResponse("Waste stats retrieved successfully",
+                stats, HttpStatus.OK, request);
     }
 
     @GetMapping("/stats/product-type/{productType}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<WasteStats> getWasteStatsByProductType(@PathVariable String productType) {
+    public ResponseEntity<?> getWasteStatsByProductType(@PathVariable String productType, HttpServletRequest request) {
         long count = wasteRepository.countByProductType(productType);
         WasteStats stats = new WasteStats(count);
-        return ResponseEntity.ok(stats);
+        return new GlobalResponseHandler().handleResponse("Waste stats by product type retrieved successfully",
+                stats, HttpStatus.OK, request);
     }
 
     public static class WasteCreateRequest {
