@@ -1,5 +1,6 @@
 package com.project.demo.logic.entity.reward;
 
+import com.project.demo.logic.entity.family.Family;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -17,5 +18,16 @@ public interface RewardRepository extends JpaRepository<Reward, Long> {
 
     @Query("SELECT r FROM Reward r WHERE r.familyId.id IN (SELECT f.id FROM Family f WHERE f.idFather.id = ?1 OR f.idSon.id = ?1)")
     List<Reward> findFamilyRewardsByUserId(Long userId);
+
+    @Query("SELECT r FROM Reward r " +
+            "JOIN r.familyId f " +
+            "JOIN f.idSon s " +
+            "WHERE r.status = TRUE AND s.id = ?1")
+    List<Reward> findSonActiveRewardsByUserId(Long userId);
+
+
+
+
+
 
 }
