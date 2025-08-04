@@ -57,7 +57,7 @@ public class WasteRestController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('FATHER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('FATHER', 'ADMIN', 'SON')")
     public ResponseEntity<Waste> createWaste(@RequestBody WasteCreateRequest request) {
         Optional<User> user = userRepository.findById(request.getUserId());
         if (user.isEmpty()) {
@@ -74,7 +74,7 @@ public class WasteRestController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('FATHER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('FATHER', 'ADMIN', 'SON')")
     public ResponseEntity<Waste> updateWaste(@PathVariable Long id, @RequestBody WasteUpdateRequest request) {
         Optional<Waste> existingWaste = wasteRepository.findById(id);
         if (existingWaste.isEmpty()) {
@@ -104,7 +104,7 @@ public class WasteRestController {
     }
 
     @GetMapping("/stats/user/{userId}")
-    @PreAuthorize("hasAnyRole('FATHER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('FATHER', 'ADMIN', 'SON')")
     public ResponseEntity<WasteStats> getWasteStatsByUser(@PathVariable Long userId) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
