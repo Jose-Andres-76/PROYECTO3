@@ -85,13 +85,9 @@ public class UserRestController {
             updateUser.setName(user.getName());
             updateUser.setLastname(user.getLastname());
             updateUser.setEmail(user.getEmail());
+
             if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-                if (user.getPassword().length() < 6) {
-                    return new GlobalResponseHandler().handleResponse("Password must be at least 6 characters long",
-                            HttpStatus.BAD_REQUEST, request);
-                }
-            } else {
-                user.setPassword(updateUser.getPassword());
+                updateUser.setPassword(passwordEncoder.encode(user.getPassword()));
             }
             updateUser.setPoints(user.getPoints());
             updateUser.setAge(user.getAge());
@@ -157,8 +153,14 @@ public class UserRestController {
             updateUser.setName(user.getName());
             updateUser.setLastname(user.getLastname());
             updateUser.setAge(user.getAge());
-            if(user.getPassword()!=null){
+            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+                if (user.getPassword().length() < 6) {
+                    return new GlobalResponseHandler().handleResponse("Password must be at least 6 characters long",
+                            HttpStatus.BAD_REQUEST, request);
+                }
                 updateUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            } else {
+                updateUser.setPassword(foundUser.get().getPassword());
             }
 
             if (user.getRole() != null && user.getRole().getId() != null) {
@@ -230,6 +232,19 @@ public class UserRestController {
         } else {
             return new GlobalResponseHandler().handleResponse(
                     "Usuario no encontrado", HttpStatus.NOT_FOUND, request);
+        }
+    }
+
+    @GetMapping("/by-email")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FATHER', 'SON')")
+    public ResponseEntity<?> getUserByEmail(@RequestParam String email, HttpServletRequest request) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            return new GlobalResponseHandler().handleResponse(
+                    "User found", userOptional.get(), HttpStatus.OK, request);
+        } else {
+            return new GlobalResponseHandler().handleResponse(
+                    "User not found", HttpStatus.NOT_FOUND, request);
         }
     }
 }
