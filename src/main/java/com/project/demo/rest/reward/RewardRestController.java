@@ -142,7 +142,6 @@ public class RewardRestController {
     public ResponseEntity<?> redeemReward(@PathVariable Long id, HttpServletRequest request) {
         Optional<Reward> existingRewardOpt = rewardRepository.findById(id);
 
-        System.out.println("LLEGUE AL REWARD BACK");
 
         if (existingRewardOpt.isPresent()) {
             Reward existingReward = existingRewardOpt.get();
@@ -156,8 +155,6 @@ public class RewardRestController {
                 existingReward.setStatus(false);
                 Family father = existingReward.getFamily();
                 EmailModel emailPadre=SendEmailReedemReward(existingReward,father);
-                System.out.println("CORREEOOOOO PADREEE");
-                System.out.println(emailPadre);
                 emailService.sendSimpleEmail(emailPadre);
                 rewardRepository.save(existingReward);
                 son.setPoints(pointTotal);

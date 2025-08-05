@@ -4,6 +4,7 @@ import com.project.demo.logic.entity.challenge.Challenge;
 import com.project.demo.logic.entity.challenge.ChallengeRepository;
 import com.project.demo.logic.entity.http.GlobalResponseHandler;
 import com.project.demo.logic.entity.http.Meta;
+import com.project.demo.logic.entity.reward.Reward;
 import com.project.demo.logic.entity.user.User;
 import com.project.demo.logic.entity.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,6 +46,32 @@ public class ChallengeRestController {
         meta.setPageSize(size);
         return new GlobalResponseHandler().handleResponse("Challenges listed.", challenges, HttpStatus.OK, meta);
     }
+
+    @GetMapping("active/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getAllActiveChallenges(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @PathVariable Long id,
+            HttpServletRequest request) {
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+        List<Challenge> challenges = challengeRepository.findSonActiveChallengeByUserId(id);
+        int totalElements = (int) challengeRepository.count();
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+        Meta meta = new Meta(request.getMethod(), request.getRequestURL().toString());
+        meta.setTotalPages(totalPages);
+        meta.setTotalElements(totalElements);
+        meta.setPageNumber(page);
+        meta.setPageSize(size);
+
+        if(challenges.size()==0){
+            List<Challenge> challengeArrayList = new ArrayList<>();
+            return new GlobalResponseHandler().handleResponse("Active Challenge not listed.", challengeArrayList, HttpStatus.OK, meta);
+        }
+        return new GlobalResponseHandler().handleResponse("Challenges listed.", challenges, HttpStatus.OK, meta);
+    }
+
 
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
