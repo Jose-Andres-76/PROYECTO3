@@ -151,12 +151,14 @@ public class RewardRestController {
             User son=existingSon.get();
             int pointTotal=son.getPoints()-existingReward.getCost();
             if(pointTotal<0){
-                return new GlobalResponseHandler().handleResponse("Reward Not Avaible to Reedeem", existingReward, HttpStatus.OK, request);
+                return new GlobalResponseHandler().handleResponse("Reward Not Avaible to Reedeem", existingReward, HttpStatus.NOT_FOUND, request);
             } else{
                 existingReward.setStatus(false);
                 Family father = existingReward.getFamily();
-//            EmailModel email=SendEmailReedemReward(existingReward,father);
-//            emailService.sendSimpleEmail(email);
+                EmailModel emailPadre=SendEmailReedemReward(existingReward,father);
+                System.out.println("CORREEOOOOO PADREEE");
+                System.out.println(emailPadre);
+                emailService.sendSimpleEmail(emailPadre);
                 rewardRepository.save(existingReward);
                 son.setPoints(pointTotal);
                 userRepository.save(son);
@@ -166,6 +168,9 @@ public class RewardRestController {
             return new GlobalResponseHandler().handleResponse("Reward with id: " + id + " not found.", HttpStatus.NOT_FOUND, request);
         }
     }
+
+
+
 
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated() && hasAnyRole('ADMIN', 'FATHER')")
@@ -190,7 +195,7 @@ public class RewardRestController {
         EmailModel emailModel = new EmailModel();
         emailModel.setTo(family.getFather().getEmail());
         emailModel.setSubject("Canjeo de Puntos Eco de su Hijo " + family.getSon().getName() + " "+ family.getSon().getLastname());
-        emailModel.setSubject("Su hijo/a acaba de reclamar el siguiente premio " + reward.getDescription() + " el mismo se esforzo mucho porque tuvo que gastar este numero de puntos: "+ reward.getCost());
+        emailModel.setText("Su hijo/a acaba de reclamar el siguiente premio " + reward.getDescription() + " el mismo se esforzo mucho porque tuvo que gastar este numero de puntos: "+ reward.getCost());
         return emailModel;
 
 

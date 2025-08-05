@@ -14,6 +14,8 @@ public class EmailService {
     private JavaMailSender mailSender;
 
     public void sendSimpleEmail(EmailModel emailModel) {
+        System.out.println("EMAIL SERVICIO");
+        System.out.println(emailModel);
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("ecoasistente53@gmail.com");
         message.setTo(emailModel.getTo());
