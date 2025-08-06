@@ -7,9 +7,11 @@ public class UserUpdateRequest {
     private String name;
     private String lastname;
     private Integer  age;
+
     private String password;
 
     private MultipartFile image;
+    private String passwordConfirmation;
 
     public UserUpdateRequest() {};
 
@@ -53,12 +55,21 @@ public class UserUpdateRequest {
         this.image = image;
     }
 
+    public String getPasswordConfirmation() {
+        return passwordConfirmation;
+    }
+
+    public void setPasswordConfirmation(String passwordConfirmation) {
+        this.passwordConfirmation = passwordConfirmation;
+    }
+
     @Override
     public String toString() {
         return "UserUpdateRequest{" +
                 "name='" + name + '\'' +
                 ", lastname='" + lastname + '\'' +
                 ", age=" + age +
+                ", passwordConfirmation='" + passwordConfirmation + '\'' +
                 ", password='" + password + '\'' +
                 ", image=" + image +
                 '}';

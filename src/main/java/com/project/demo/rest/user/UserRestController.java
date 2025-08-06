@@ -10,6 +10,7 @@ import com.project.demo.logic.entity.user.UserUpdateRequest;
 import com.project.demo.services.Utils.RegexChecker;
 import com.project.demo.services.cloudinary.CloudinaryService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.hibernate.event.spi.SaveOrUpdateEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -130,11 +131,19 @@ public class UserRestController {
                 updateUser = cloudinaryService.overwrite(userId, file);
             }
 
+            System.out.println("ACTUALIZANDO PROFILE");
+
             updateUser.setName(userUpdateRequest.getName());
             updateUser.setLastname(userUpdateRequest.getLastname());
             updateUser.setAge(userUpdateRequest.getAge());
             if(userUpdateRequest.getPassword() !=null){
+                if(!passwordEncoder.matches(userUpdateRequest.getPasswordConfirmation(), updateUser.getPassword())){
+                    System.out.println("NO MATCH");
+                    return new GlobalResponseHandler().handleResponse("User Password Error",
+                            updateUser, HttpStatus.BAD_REQUEST, request);
+                }
                 updateUser.setPassword(passwordEncoder.encode(userUpdateRequest.getPassword()));
+
             }
 
             userRepository.save(updateUser);
