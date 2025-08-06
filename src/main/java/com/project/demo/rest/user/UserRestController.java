@@ -118,6 +118,9 @@ public class UserRestController {
             @ModelAttribute UserUpdateRequest userUpdateRequest,
             HttpServletRequest request) {
 
+        System.out.println("HTTP REQUES");
+        System.out.println(userUpdateRequest);
+
         Optional<User> foundUser = userRepository.findById(userId);
 
         if (foundUser.isPresent()) {
@@ -156,34 +159,82 @@ public class UserRestController {
         }
     }
 
-    @PutMapping("/editProfile/{userId}")
+    @PatchMapping(value = "/editProfile/{userId}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> updateUserProfile(@PathVariable Long userId, @RequestBody User user, HttpServletRequest request) {
+    public ResponseEntity<?> updateUserProfile(
+            @PathVariable Long userId,
+            @ModelAttribute UserUpdateRequest userUpdateRequest,
+            HttpServletRequest request) {
+
+        System.out.println("HTTP REQUES NO PIC");
+        System.out.println(userUpdateRequest);
+
         Optional<User> foundUser = userRepository.findById(userId);
-        if(foundUser.isPresent()) {
-            User updateUser= foundUser.get();
 
-            updateUser.setName(user.getName());
-            updateUser.setLastname(user.getLastname());
-            updateUser.setAge(user.getAge());
-            if(user.getPassword()!=null){
-                updateUser.setPassword(passwordEncoder.encode(user.getPassword()));
-            }
+        if (foundUser.isPresent()) {
+            User updateUser = foundUser.get();
 
-            if (user.getRole() != null && user.getRole().getId() != null) {
-                Role role = roleRepository.findById(user.getRole().getId())
-                        .orElseThrow(() -> new RuntimeException("Role not found"));
-                updateUser.setRole(role);
+//            MultipartFile file = userUpdateRequest.getImage();
+
+//            if (updateUser.getUrlImage() == null || updateUser.getUrlImage().isEmpty() || regexChecker.checkGoogleImage(updateUser.getUrlImage())) {
+//                updateUser = cloudinaryService.upload(userId, file);
+//            } else {
+//                updateUser = cloudinaryService.overwrite(userId, file);
+//            }
+
+            System.out.println("ACTUALIZANDO PROFILE");
+
+            updateUser.setName(userUpdateRequest.getName());
+            updateUser.setLastname(userUpdateRequest.getLastname());
+            updateUser.setAge(userUpdateRequest.getAge());
+            if(userUpdateRequest.getPassword() !=null){
+                if(!passwordEncoder.matches(userUpdateRequest.getPasswordConfirmation(), updateUser.getPassword())){
+                    System.out.println("NO MATCH");
+                    return new GlobalResponseHandler().handleResponse("User Password Error",
+                            updateUser, HttpStatus.BAD_REQUEST, request);
+                }
+                updateUser.setPassword(passwordEncoder.encode(userUpdateRequest.getPassword()));
+
             }
 
             userRepository.save(updateUser);
+
             return new GlobalResponseHandler().handleResponse("User updated successfully",
                     updateUser, HttpStatus.OK, request);
         } else {
-            return new GlobalResponseHandler().handleResponse("User id " + userId + " not found"  ,
+            return new GlobalResponseHandler().handleResponse("User id " + userId + " not found",
                     HttpStatus.NOT_FOUND, request);
         }
     }
+
+//    @PutMapping("/editProfile/{userId}")
+//    @PreAuthorize("isAuthenticated()")
+//    public ResponseEntity<?> updateUserProfile(@PathVariable Long userId, @RequestBody User user, HttpServletRequest request) {
+//        Optional<User> foundUser = userRepository.findById(userId);
+//        if(foundUser.isPresent()) {
+//            User updateUser= foundUser.get();
+//
+//            updateUser.setName(user.getName());
+//            updateUser.setLastname(user.getLastname());
+//            updateUser.setAge(user.getAge());
+//            if(user.getPassword()!=null){
+//                updateUser.setPassword(passwordEncoder.encode(user.getPassword()));
+//            }
+//
+//            if (user.getRole() != null && user.getRole().getId() != null) {
+//                Role role = roleRepository.findById(user.getRole().getId())
+//                        .orElseThrow(() -> new RuntimeException("Role not found"));
+//                updateUser.setRole(role);
+//            }
+//
+//            userRepository.save(updateUser);
+//            return new GlobalResponseHandler().handleResponse("User updated successfully",
+//                    updateUser, HttpStatus.OK, request);
+//        } else {
+//            return new GlobalResponseHandler().handleResponse("User id " + userId + " not found"  ,
+//                    HttpStatus.NOT_FOUND, request);
+//        }
+//    }
 
 
 
