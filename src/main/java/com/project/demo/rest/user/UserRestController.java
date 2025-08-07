@@ -131,11 +131,12 @@ public class UserRestController {
             }
 
             System.out.println("ACTUALIZANDO PROFILE");
+            System.out.println(userUpdateRequest.getPassword());
 
             updateUser.setName(userUpdateRequest.getName());
             updateUser.setLastname(userUpdateRequest.getLastname());
             updateUser.setAge(userUpdateRequest.getAge());
-            if(userUpdateRequest.getPassword() !=null){
+            if(!userUpdateRequest.getPassword().equals("")){
                 if(!passwordEncoder.matches(userUpdateRequest.getPasswordConfirmation(), updateUser.getPassword())){
                     System.out.println("NO MATCH");
                     return new GlobalResponseHandler().handleResponse("User Password Error",
@@ -166,15 +167,17 @@ public class UserRestController {
         System.out.println(userUpdateRequest);
 
         Optional<User> foundUser = userRepository.findById(userId);
+
         if (foundUser.isPresent()) {
             User updateUser = foundUser.get();
+
 
             System.out.println("ACTUALIZANDO PROFILE");
 
             updateUser.setName(userUpdateRequest.getName());
             updateUser.setLastname(userUpdateRequest.getLastname());
             updateUser.setAge(userUpdateRequest.getAge());
-            if(userUpdateRequest.getPassword() !=null){
+            if(!userUpdateRequest.getPassword().equals("")){
                 if(!passwordEncoder.matches(userUpdateRequest.getPasswordConfirmation(), updateUser.getPassword())){
                     System.out.println("NO MATCH");
                     return new GlobalResponseHandler().handleResponse("User Password Error",
@@ -193,7 +196,6 @@ public class UserRestController {
                     HttpStatus.NOT_FOUND, request);
         }
     }
-
 
 
     @DeleteMapping("/{userId}")
