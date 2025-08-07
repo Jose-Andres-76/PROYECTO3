@@ -86,13 +86,9 @@ public class UserRestController {
             updateUser.setName(user.getName());
             updateUser.setLastname(user.getLastname());
             updateUser.setEmail(user.getEmail());
+
             if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-                if (user.getPassword().length() < 6) {
-                    return new GlobalResponseHandler().handleResponse("Password must be at least 6 characters long",
-                            HttpStatus.BAD_REQUEST, request);
-                }
-            } else {
-                user.setPassword(updateUser.getPassword());
+                updateUser.setPassword(passwordEncoder.encode(user.getPassword()));
             }
             updateUser.setPoints(user.getPoints());
             updateUser.setAge(user.getAge());
@@ -170,17 +166,8 @@ public class UserRestController {
         System.out.println(userUpdateRequest);
 
         Optional<User> foundUser = userRepository.findById(userId);
-
         if (foundUser.isPresent()) {
             User updateUser = foundUser.get();
-
-//            MultipartFile file = userUpdateRequest.getImage();
-
-//            if (updateUser.getUrlImage() == null || updateUser.getUrlImage().isEmpty() || regexChecker.checkGoogleImage(updateUser.getUrlImage())) {
-//                updateUser = cloudinaryService.upload(userId, file);
-//            } else {
-//                updateUser = cloudinaryService.overwrite(userId, file);
-//            }
 
             System.out.println("ACTUALIZANDO PROFILE");
 
@@ -206,35 +193,6 @@ public class UserRestController {
                     HttpStatus.NOT_FOUND, request);
         }
     }
-
-//    @PutMapping("/editProfile/{userId}")
-//    @PreAuthorize("isAuthenticated()")
-//    public ResponseEntity<?> updateUserProfile(@PathVariable Long userId, @RequestBody User user, HttpServletRequest request) {
-//        Optional<User> foundUser = userRepository.findById(userId);
-//        if(foundUser.isPresent()) {
-//            User updateUser= foundUser.get();
-//
-//            updateUser.setName(user.getName());
-//            updateUser.setLastname(user.getLastname());
-//            updateUser.setAge(user.getAge());
-//            if(user.getPassword()!=null){
-//                updateUser.setPassword(passwordEncoder.encode(user.getPassword()));
-//            }
-//
-//            if (user.getRole() != null && user.getRole().getId() != null) {
-//                Role role = roleRepository.findById(user.getRole().getId())
-//                        .orElseThrow(() -> new RuntimeException("Role not found"));
-//                updateUser.setRole(role);
-//            }
-//
-//            userRepository.save(updateUser);
-//            return new GlobalResponseHandler().handleResponse("User updated successfully",
-//                    updateUser, HttpStatus.OK, request);
-//        } else {
-//            return new GlobalResponseHandler().handleResponse("User id " + userId + " not found"  ,
-//                    HttpStatus.NOT_FOUND, request);
-//        }
-//    }
 
 
 
@@ -290,6 +248,19 @@ public class UserRestController {
         } else {
             return new GlobalResponseHandler().handleResponse(
                     "Usuario no encontrado", HttpStatus.NOT_FOUND, request);
+        }
+    }
+
+    @GetMapping("/by-email")
+    @PreAuthorize("hasAnyRole('ADMIN', 'FATHER', 'SON')")
+    public ResponseEntity<?> getUserByEmail(@RequestParam String email, HttpServletRequest request) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            return new GlobalResponseHandler().handleResponse(
+                    "User found", userOptional.get(), HttpStatus.OK, request);
+        } else {
+            return new GlobalResponseHandler().handleResponse(
+                    "User not found", HttpStatus.NOT_FOUND, request);
         }
     }
 }
