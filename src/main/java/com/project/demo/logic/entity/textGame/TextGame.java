@@ -30,7 +30,9 @@ public class TextGame {
     @Column(name = "updated_at")
     private java.util.Date updatedAt;
 
-    public TextGame(long l, String answer, String number) {}
+    public TextGame() {
+
+    }
 
     public TextGame(Long id, Game game, String text, String answer) {
         this.id = id;
