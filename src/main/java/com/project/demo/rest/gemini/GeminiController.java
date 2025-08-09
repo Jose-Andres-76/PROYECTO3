@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
+
 
 @RestController
 @RequestMapping("/gemini")
@@ -18,14 +17,10 @@ public class GeminiController {
     private final Map<String, StringBuilder> conversations = new HashMap<>();
 
 
-    @Value("${gemini_MAX_RESPONSE_LENGTH}")
-    private String MAX_RESPONSE_LENGTH;
+    private final int gemini_MAX_RESPONSE_LENGTH = 400;
+    private final int gemini_MAX_SENTENCES = 6;
+    private final int gemini_MAX_LETTERS=350;
 
-    @Value("${gemini_MAX_SENTENCES}")
-    private String MAX_SENTENCES;
-
-    @Value("${gemini_MAX_LETTERS}")
-    private String MAX_LETTERS;
 
     public GeminiController(GeminiConsole geminiConsole) {
         this.geminiConsole = geminiConsole;
@@ -98,13 +93,13 @@ public class GeminiController {
     }
 
     private String limitResponseLength(String response) {
-        if (response.length() > Integer.parseInt(MAX_RESPONSE_LENGTH)){
+        if (response.length() > gemini_MAX_RESPONSE_LENGTH){
             String[] sentences = response.split("\\. ");
             StringBuilder shortResponse = new StringBuilder();
             int sentenceCount = 0;
 
             for (String sentence : sentences) {
-                if (sentenceCount < Integer.parseInt(MAX_SENTENCES)&& shortResponse.length() < Integer.parseInt(MAX_LETTERS)) {
+                if (sentenceCount < gemini_MAX_SENTENCES&& shortResponse.length() < gemini_MAX_LETTERS) {
                     shortResponse.append(sentence);
                     if (!sentence.endsWith(".")) {
                         shortResponse.append(".");
