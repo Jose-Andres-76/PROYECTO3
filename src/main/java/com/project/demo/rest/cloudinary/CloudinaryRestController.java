@@ -25,8 +25,7 @@ public class CloudinaryRestController {
     @Autowired
     private CloudinaryService cloudinaryService;
 
-    public CloudinaryRestController(CloudinaryService cloudinaryService) {
-        this.cloudinaryService = cloudinaryService;
+    public CloudinaryRestController() {
     }
 
     @GetMapping
