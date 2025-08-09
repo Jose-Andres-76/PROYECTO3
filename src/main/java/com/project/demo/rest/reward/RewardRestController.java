@@ -94,11 +94,29 @@ public class RewardRestController {
 
     @GetMapping("/my-family-rewards/{userId}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> getFamilyRewardsByUserId(@PathVariable Long userId, HttpServletRequest request) {
+    public ResponseEntity<?> getFamilyRewardsByUserId(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request) {
+
         Optional<User> user = userRepository.findById(userId);
         if (user.isPresent()) {
-            List<Reward> rewards = rewardRepository.findFamilyRewardsByUserId(userId);
-            return new GlobalResponseHandler().handleResponse("Rewards for family found.", rewards, HttpStatus.OK, request);
+            List<Reward> allRewards = rewardRepository.findFamilyRewardsByUserId(userId);
+            int totalElements = allRewards.size();
+            int totalPages = (int) Math.ceil((double) totalElements / size);
+
+            int startIndex = (page - 1) * size;
+            int endIndex = Math.min(startIndex + size, totalElements);
+            List<Reward> rewards = allRewards.subList(startIndex, endIndex);
+
+            Meta meta = new Meta(request.getMethod(), request.getRequestURL().toString());
+            meta.setTotalPages(totalPages);
+            meta.setTotalElements(totalElements);
+            meta.setPageNumber(page);
+            meta.setPageSize(size);
+
+            return new GlobalResponseHandler().handleResponse("Rewards for family found.", rewards, HttpStatus.OK, meta);
         } else {
             return new GlobalResponseHandler().handleResponse("User with id: " + userId + " not found.", HttpStatus.NOT_FOUND, request);
         }

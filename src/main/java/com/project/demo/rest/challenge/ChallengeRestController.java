@@ -98,7 +98,6 @@ public class ChallengeRestController {
             int totalElements = allChallenges.size();
             int totalPages = (int) Math.ceil((double) totalElements / size);
 
-            // Apply pagination manually since the repository method doesn't support Pageable
             int startIndex = (page - 1) * size;
             int endIndex = Math.min(startIndex + size, totalElements);
             List<Challenge> challenges = allChallenges.subList(startIndex, endIndex);

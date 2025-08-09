@@ -2,7 +2,6 @@ package com.project.demo.logic.entity.challenge;
 
 import com.project.demo.logic.entity.family.Family;
 import com.project.demo.logic.entity.game.Game;
-import com.project.demo.logic.entity.reward.Reward;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
