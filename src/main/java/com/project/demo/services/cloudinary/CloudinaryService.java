@@ -23,12 +23,11 @@ public class CloudinaryService {
      * Inyection for the cloudinary personal information
      */
     @Autowired
-    private final Cloudinary cloudinary;
+    private Cloudinary cloudinary;
     @Autowired
     private UserRepository userRepository;
 
-    public CloudinaryService(Cloudinary cloudinary) {
-        this.cloudinary = cloudinary;
+    public CloudinaryService( ) {
     }
 
 

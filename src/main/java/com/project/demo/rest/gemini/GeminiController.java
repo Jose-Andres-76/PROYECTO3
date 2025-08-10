@@ -7,12 +7,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+
+
 @RestController
 @RequestMapping("/gemini")
 public class GeminiController {
 
     private final GeminiConsole geminiConsole;
     private final Map<String, StringBuilder> conversations = new HashMap<>();
+
+
+    private final int gemini_MAX_RESPONSE_LENGTH = 400;
+    private final int gemini_MAX_SENTENCES = 6;
+    private final int gemini_MAX_LETTERS=350;
+
 
     public GeminiController(GeminiConsole geminiConsole) {
         this.geminiConsole = geminiConsole;
@@ -85,13 +93,13 @@ public class GeminiController {
     }
 
     private String limitResponseLength(String response) {
-        if (response.length() > 400) {
+        if (response.length() > gemini_MAX_RESPONSE_LENGTH){
             String[] sentences = response.split("\\. ");
             StringBuilder shortResponse = new StringBuilder();
             int sentenceCount = 0;
 
             for (String sentence : sentences) {
-                if (sentenceCount < 6 && shortResponse.length() < 350) {
+                if (sentenceCount < gemini_MAX_SENTENCES&& shortResponse.length() < gemini_MAX_LETTERS) {
                     shortResponse.append(sentence);
                     if (!sentence.endsWith(".")) {
                         shortResponse.append(".");

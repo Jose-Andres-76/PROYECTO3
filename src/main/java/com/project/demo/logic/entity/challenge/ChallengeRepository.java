@@ -18,4 +18,10 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
 
     @Query("SELECT c FROM Challenge c WHERE c.familyId.id IN (SELECT f.id FROM Family f WHERE f.idFather.id = ?1 OR f.idSon.id = ?1)")
     List<Challenge> findByFamilyId_UserId(Long userId);
+
+    @Query("SELECT c FROM Challenge c " +
+            "JOIN c.familyId f " +
+            "JOIN f.idSon s " +
+            "WHERE c.challengeStatus = TRUE AND s.id = ?1")
+    List<Challenge> findSonActiveChallengeByUserId(Long userId);
 }

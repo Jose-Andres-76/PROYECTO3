@@ -79,22 +79,22 @@ public class FamilyRestController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'FATHER')")
     public ResponseEntity<?> createFamily(@RequestBody Family newFamily, HttpServletRequest request) {
-        System.out.println(newFamily);
 
 
-        System.out.println(newFamily.getFather().getId());
+
+
         Optional<User> father = userRepository.findById(newFamily.getFather().getId());
         User fatherFound= father.get();
-        System.out.println(fatherFound);
+
 
         Optional<User> son = userRepository.findById(newFamily.getSon().getId());
         User sonFound= son.get();
-        System.out.println(sonFound);
+
 
         newFamily.setFather(fatherFound);
         newFamily.setSon(sonFound);
 
-        System.out.println(newFamily);
+
         Family savedFamily = familyRepository.save(newFamily);
         return new GlobalResponseHandler().handleResponse("Family created successfully.", savedFamily, HttpStatus.CREATED, request);
     }

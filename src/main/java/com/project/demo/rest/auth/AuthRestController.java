@@ -18,6 +18,9 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +43,9 @@ public class AuthRestController {
     private RoleRepository roleRepository;
     @Autowired
     private GoogleAuthenticationService googleAuthenticationService;
+
+    @Value("${google.callback.value}")
+    private String googleCallbackValue;
 
 
 
@@ -93,7 +99,7 @@ public class AuthRestController {
         LoginResponse response = googleAuthenticationService.processGoogleUser(oAuth2User);
 
         // Redirect to frontend with token
-        String frontendUrl = "http://localhost:4200/auth/google/callback";
+        String frontendUrl = googleCallbackValue;
         String redirectUrl = String.format("%s?token=%s&expiresIn=%d",
             frontendUrl, response.getToken(), response.getExpiresIn());
 
