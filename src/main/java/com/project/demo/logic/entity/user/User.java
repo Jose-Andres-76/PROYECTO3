@@ -37,6 +37,7 @@ public class User implements UserDetails {
     private String urlImage;
     private String publicIdCloudinary;
     private int points;
+    private int age;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -168,6 +169,12 @@ public class User implements UserDetails {
     public void setPoints(int points) {
         this.points = points;
     }
+    public int getAge() {
+        return age;
+    }
+    public void setAge(int age) {
+        this.age = age;
+    }
 
     public String getPublicIdCloudinary() {
         return publicIdCloudinary;
@@ -214,6 +221,7 @@ public class User implements UserDetails {
                 ", urlImage='" + urlImage + '\'' +
                 ", publicIdCloudinary='" + publicIdCloudinary + '\'' +
                 ", points=" + points +
+                ", age=" + age +
                 ", access=" + access +
                 ", providerId='" + providerId + '\'' +
                 ", emailVerified='" + emailVerified + '\'' +

@@ -39,7 +39,7 @@ public class EmailRestController {
                     sendmail, HttpStatus.OK, request);
         } catch (Exception e) {
             return new GlobalResponseHandler().handleResponse(  "Error sending email: " + sendmail.getTo(),
-                    sendmail, HttpStatus.OK, request);
+                    sendmail, HttpStatus.BAD_REQUEST, request);
         }
     }
 
